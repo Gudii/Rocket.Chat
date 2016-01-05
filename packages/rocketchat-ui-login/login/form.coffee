@@ -6,7 +6,7 @@ Template.loginForm.helpers
 		return if RocketChat.settings.get 'Accounts_RequireNameForSignUp' then t('Name') else t('Name_optional')
 
 	showFormLogin: ->
-		return RocketChat.settings.get 'Accounts_ShowFormLogin' 
+		return RocketChat.settings.get 'Accounts_ShowFormLogin'
 
 	showName: ->
 		return 'hidden' unless Template.instance().state.get() is 'register'
@@ -106,7 +106,43 @@ Template.loginForm.events
 							instance.state.set 'wait-activation'
 
 			else
-				loginMethod = 'loginWithPassword'
+				#connect to mcn account
+					 userName = document.getElementsByName('emailOrUsername')[0].value;
+					 password = document.getElementsByName('pass')[0].value;
+
+
+
+					 Meteor.call 'checkaccount', userName, password, (error, result) ->
+						 if (result==200)
+							 Meteor.call 'registerUser', formData, (error, result) ->
+								 RocketChat.Button.reset(button)
+
+								 if error?
+									 if error.error is 'Email already exists.'
+										 #toastr.error t 'Email_already_exists'#
+									 else
+										 #toastr.error error.reason
+							 loginMethod = 'loginWithPassword'
+							 if RocketChat.settings.get('LDAP_Enable')
+								 loginMethod = 'loginWithLDAP'
+
+
+							 Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
+								 RocketChat.Button.reset(button)
+								 if error?
+									 if error.error is 'no-valid-email'
+										 instance.state.set 'email-verification'
+									 else
+										 toastr.error t 'User_not_found_or_incorrect_password'
+									 return
+								 localStorage.setItem('userLanguage', Meteor.user()?.language)
+								 setLanguage(Meteor.user()?.language)
+						 else
+							 RocketChat.Button.reset(button)
+							 toastr.error t 'User_not_found_or_incorrect_password'
+
+
+				###loginMethod = 'loginWithPassword'
 				if RocketChat.settings.get('LDAP_Enable')
 					loginMethod = 'loginWithLDAP'
 
@@ -119,7 +155,7 @@ Template.loginForm.events
 							toastr.error t 'User_not_found_or_incorrect_password'
 						return
 					localStorage.setItem('userLanguage', Meteor.user()?.language)
-					setLanguage(Meteor.user()?.language)
+					setLanguage(Meteor.user()?.language)###
 
 	'click .register': ->
 		Template.instance().state.set 'register'
