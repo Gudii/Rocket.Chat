@@ -40,18 +40,18 @@
 					<button data-loading-text="{{_ "Please_wait"}}..." class='button primary login'><span>{{btnLoginSave}}</span></button>
 				</div>
 				{{#if registrationAllowed}}
-				<div class="register {{showRegisterLink}}">
+				<!--<div class="register {{showRegisterLink}}">
 					<a href="">{{_ 'Register'}}</a>
-				</div>
+				</div>-->
 				{{else}}
 					{{#if linkReplacementText}}
 						{{{linkReplacementText}}}
 					{{/if}}
 				{{/if}}
 				{{#if passwordresetAllowed}}
-				<div class="forgot-password {{showForgotPasswordLink}}">
+				<!--<div class="forgot-password {{showForgotPasswordLink}}">
 					<a href="">{{_ 'Forgot_password'}}</a>
-				</div>
+				</div>-->
 				{{/if}}
 			{{/if}}
 		{{/if}}

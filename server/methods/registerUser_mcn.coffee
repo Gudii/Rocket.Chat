@@ -1,5 +1,5 @@
 Meteor.methods
-	registerUser: (formData) ->
+	registerUser_mcn: (formData) ->
 		if RocketChat.settings.get('Accounts_RegistrationForm') is 'Disabled'
 			throw new Meteor.Error 'registration-disabled', 'User registration is disabled'
 
@@ -7,12 +7,12 @@ Meteor.methods
 			throw new Meteor.Error 'registration-disabled', 'User registration is only allowed via Secret URL'
 
 		userData =
-			email: formData.email
+			email: formData.emailOrUsername
 			password: formData.pass
 
 		userId = Accounts.createUser userData
 
-		RocketChat.models.Users.setName userId, formData.name
+		RocketChat.models.Users.setName userId, formData.emailOrUsername
 
 		if userData.email
 			Accounts.sendVerificationEmail(userId, userData.email);

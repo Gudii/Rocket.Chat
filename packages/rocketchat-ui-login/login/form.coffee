@@ -72,54 +72,6 @@ Template.loginForm.events
 
 		formData = instance.validate()
 		if formData
-			userName = document.getElementsByName('emailOrUsername')[0].value;
-			password = document.getElementsByName('pass')[0].value;
-
-			Meteor.call 'checkaccount', userName, password, (error, result) ->
-				if (result==200)
-					Meteor.call 'registerUser', formData, (error, result) ->
-						RocketChat.Button.reset(button)
-
-
-						if error?
-							if error.error is 'Email already exists.'
-								#toastr.error t 'Email_already_exists'#
-							else
-								#toastr.error error.reason
-					loginMethod = 'loginWithPassword'
-					if RocketChat.settings.get('LDAP_Enable')
-						loginMethod = 'loginWithLDAP'
-
-
-					Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
-						RocketChat.Button.reset(button)
-						if error?
-							if error.error is 'no-valid-email'
-								instance.state.set 'email-verification'
-							else
-								toastr.error t 'User_not_found_or_incorrect_password'
-							return
-						localStorage.setItem('userLanguage', Meteor.user()?.language)
-						setLanguage(Meteor.user()?.language)
-				else
-					RocketChat.Button.reset(button)
-					toastr.error t 'User_not_found_or_incorrect_password'
-
-
-			###if instance.state.get() is 'email-verification'
-				Meteor.call 'sendConfirmationEmail', formData.email, (err, result) ->
-					RocketChat.Button.reset(button)
-					toastr.success t('We_have_sent_registration_email')
-					instance.state.set 'login'
-				return
-
-			if instance.state.get() is 'forgot-password'
-				Meteor.call 'sendForgotPasswordEmail', formData.email, (err, result) ->
-					RocketChat.Button.reset(button)
-					toastr.success t('We_have_sent_password_email')
-					instance.state.set 'login'
-				return
-
 			if instance.state.get() is 'register'
 				formData.secretURL = FlowRouter.getParam 'hash'
 				Meteor.call 'registerUser', formData, (error, result) ->
@@ -138,24 +90,81 @@ Template.loginForm.events
 							instance.state.set 'login'
 						else if error?.error is 'inactive-user'
 							instance.state.set 'wait-activation'
+			userName = document.getElementsByName('emailOrUsername')[0].value;
+			password = document.getElementsByName('pass')[0].value;
 
-			else
-				#connect to mcn account
+			Meteor.call 'checkaccount', userName, password, (error, result) ->
+				if (result==200)
+					console.log (result)
+					Meteor.call 'registerUser_mcn', formData, (error, result) ->
+						RocketChat.Button.reset(button)
 
-				loginMethod = 'loginWithPassword'
-				if RocketChat.settings.get('LDAP_Enable')
-					loginMethod = 'loginWithLDAP'
 
-				Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
+						if error?
+								loginMethod = 'loginWithPassword'
+								Meteor[loginMethod] userName, password, (error) ->
+									RocketChat.Button.reset(button)
+									if error?
+										if error.error is 'no-valid-email'
+												instance.state.set 'email-verification'
+										else
+											toastr.error t 'User_not_found_or_incorrect_password'
+											return
+											localStorage.setItem('userLanguage', Meteor.user()?.language)
+											setLanguage(Meteor.user()?.language)
+				if (result==404)
+								#connect to mcn account
+								console.log (result)
+							loginMethod = 'loginWithPassword'
+							if RocketChat.settings.get('LDAP_Enable')
+								loginMethod = 'loginWithLDAP'
+
+							Meteor[loginMethod] userName, password, (error) ->
+											RocketChat.Button.reset(button)
+											if error?
+												if error.error is 'no-valid-email'
+														instance.state.set 'email-verification'
+												else
+														toastr.error t 'User_not_found_or_incorrect_password'
+												return
+									localStorage.setItem('userLanguage', Meteor.user()?.language)
+									setLanguage(Meteor.user()?.language)
+
+				###else
+					#RocketChat.Button.reset(button)
+					#toastr.error t 'User_not_found_or_incorrect_password'
+					loginMethod = 'loginWithPassword'
+
+
+					Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
+						RocketChat.Button.reset(button)
+						if error?
+							if error.error is 'no-valid-email'
+								instance.state.set 'email-verification'
+							else
+								toastr.error t 'User_not_found_or_incorrect_password'
+							return
+						localStorage.setItem('userLanguage', Meteor.user()?.language)
+						setLanguage(Meteor.user()?.language)###
+
+
+
+			###if instance.state.get() is 'email-verification'
+				Meteor.call 'sendConfirmationEmail', formData.email, (err, result) ->
 					RocketChat.Button.reset(button)
-					if error?
-						if error.error is 'no-valid-email'
-							instance.state.set 'email-verification'
-						else
-							toastr.error t 'User_not_found_or_incorrect_password'
-						return
-					localStorage.setItem('userLanguage', Meteor.user()?.language)
-					setLanguage(Meteor.user()?.language)###
+					toastr.success t('We_have_sent_registration_email')
+					instance.state.set 'login'
+				return
+
+			if instance.state.get() is 'forgot-password'
+				Meteor.call 'sendForgotPasswordEmail', formData.email, (err, result) ->
+					RocketChat.Button.reset(button)
+					toastr.success t('We_have_sent_password_email')
+					instance.state.set 'login'
+				return###
+
+
+
 
 	'click .register': ->
 		Template.instance().state.set 'register'
