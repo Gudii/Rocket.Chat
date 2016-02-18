@@ -131,6 +131,13 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 
 		return @find(query, options)?.fetch?()?[0]?.lastLogin
 
+	findUsersByUsernames: (usernames, options) ->
+		query =
+			username:
+				$in: usernames
+
+		return @find query, options
+
 	# UPDATE
 	updateLastLoginById: (_id) ->
 		update =
@@ -268,3 +275,23 @@ RocketChat.models.Users = new class extends RocketChat.models._Base
 					verified: false
 
 		return @remove query
+
+	###
+	Find users to send a message by email if:
+	- he is not online
+	- has a verified email
+	- has not disabled email notifications
+	###
+	getUsersToSendOfflineEmail: (usersIds) ->
+		query =
+			_id:
+				$in: usersIds
+			status: 'offline'
+			statusConnection:
+				$ne: 'online'
+			'emails.verified': true
+			'settings.preferences.emailNotificationMode':
+				$ne: 'disabled'
+
+		return @find query, { fields: { emails: 1 } }
+

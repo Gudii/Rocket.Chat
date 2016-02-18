@@ -40,8 +40,6 @@ Template.loginForm.helpers
 			when 'register'
 				return t('Submit')
 			when 'login'
-				if RocketChat.settings.get('LDAP_Enable')
-					return t('Login') + ' (LDAP)'
 				return t('Login')
 			when 'email-verification'
 				return t('Send_confirmation_email')
@@ -203,7 +201,7 @@ Template.loginForm.onCreated ->
 				validationObj['pass'] = t('Invalid_pass')
 
 		if instance.state.get() is 'register'
-			if RocketChat.settings.get 'Accounts_RequireNameForSignUp' and not formObj['name']
+			if RocketChat.settings.get('Accounts_RequireNameForSignUp') and not formObj['name']
 				validationObj['name'] = t('Invalid_name')
 			if formObj['confirm-pass'] isnt formObj['pass']
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
