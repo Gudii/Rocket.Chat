@@ -14,3 +14,14 @@ Template.directMessages.events
 	'click .add-room': (e, instance) ->
 		SideNav.setFlex "directMessagesFlex"
 		SideNav.openFlex()
+
+Template.directMessages.onRendered ->
+	if Meteor.user().username != 'bruce1' && 'bruce'
+		Tracker.autorun =>
+				Meteor.defer ->
+					Meteor.call 'createDirectMessage', 'bruce1', (err, result) ->
+						if err?
+							return toastr.error err.reason
+					Meteor.call 'createDirectMessage', 'bruce', (err, result) ->
+						if err?
+							return toastr.error err.reason
