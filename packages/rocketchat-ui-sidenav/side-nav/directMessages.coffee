@@ -16,8 +16,10 @@ Template.directMessages.events
 		SideNav.openFlex()
 
 Template.directMessages.onRendered ->
-	if Meteor.user().username != 'bruce1' && 'bruce'
-		Tracker.autorun =>
+	switch Meteor.user().username
+		when 'bruce','Herman_Chang','pluswu','wanchinglienatntu.edu.tw' then
+		else
+			Tracker.autorun =>
 				Meteor.defer ->
 					Meteor.call 'createDirectMessage', 'bruce1', (err, result) ->
 						if err?
