@@ -1,5 +1,77 @@
 ## NEXT
 
+## 0.21.0, 2016-Mar-07
+
+- Add ability for users to delete their own accounts
+- Add infinite scrolling to channels list
+- Add search bar to the channels flex
+- Add setting to allow/deny own account deletion
+- Allow numeric characters in the OAuth2 provider name
+- Allow post messages starting with slash
+- Allow prepareOutgoingRequestScript to stop execution and return a message
+- Blank channel when sending attachments as object
+- CAS Plugin: Use Meteor.users.services.cas.external_id to identify users instead of Meteor.users.username.
+- Defers user deletion
+- Delete MAINTAINERS.md
+- Disable E-mail Confirmation setting when SMTP is not set.
+- Do not add a value in both $set and $setOnInsert
+- Escapes regex in room search
+- Fix #766; Disable E-mail Confirmation setting when SMTP is not set.
+- Fixes #2399. Fixes bug with highlighted words which allowed an empty string to be defined as highlight.
+- Fixes #924. Admin users may now login without verifying their e-mails.
+- Fixes oauth registration deleting account with unverified e-mail
+- Improve last commit
+- Improve user search when adding in channels
+- Improves layout of new password requested
+- Init incoming webhook scripting
+- Init outgoing webhook scripting
+- Log error when trying to creat a user with no email via LDAP
+- Make channels list load faster by not getting full channel data, such as usernames.
+- Profile page improvements.
+- Removes loading animation overlay after pages are rendered.
+- Removes login_style setting of custom oauth.
+- Sharing recent excitement around CRM integrations
+- Shows OAuth Callback URLs
+- Support 'user_id' in addition to 'id' and 'ID' for service identifier
+
+## 0.20.0, 2016-Feb-29
+
+- Ability to disable sending nickname and message via push notification
+- Added back 'delete room' button - closes #2351
+- Added block and hidden options that can be set by env vars
+- Added description and protected flag to default roles
+- Added zh-TW and zh-HK
+- Allow markdown in attachment fields
+- Avoid using SVG for Sandstorm
+- CAS Plugin: refactored logging
+- Closes #2178; Admin View Logs should auto-scroll to end
+- Closes #2316; Send test mail will block the server
+- Closes #780; Do not change the sweet alert size in small screens, change the upload-preview size
+- Closes #800; Add loading before main page render and add Fast Render
+- Do not print passwor in new LDAP log
+- Do not reset permission's roles at startup - closes #2164
+- Do not slugify room names at renaming - fixes #1571
+- Enable username as template from LDAP and enable username sync
+- Expose getAvatarUrlFromUsername function to server side
+- Fix 'render' callback of MessageTypes
+- Fix publish user_data  under "spotlight"
+- Fix root url on server side
+- Fix show more users button
+- Fixed errors saving room info in admin
+- Improve WebRTC audio quality
+- Improved sidebar overlay - should fix RocketChat/Rocket.Chat.Cordova#15
+- Improved system messages style
+- Message with types are not groupable by default
+- Moving room name to the beginning of the push notifications msg
+- Observe API embed setting and apply immediatly - fixes #1989
+- Remove _emojione.import.less from server.coffee
+- Remove native sound of notifications
+- Remove newline from en.i18n.json
+- Remove unused files and closes #801
+- Support for pinned message notification
+- Updated sweetalert
+- Uses the setting for validating rooms renaming - closes #2297
+
 ## 0.19.0, 2016-Feb-22
 
 - Re authorize streams on reconnect
