@@ -622,7 +622,7 @@
   "UTF8_Names_Validation" : "UTF-8 姓名驗證",
   "UTF8_Names_Validation_Description" : "禁止特殊字符和空格。你可以在名字末尾以為的地方使用 -、_ 和 . 。",
   "View_All" : "查看全部",
-  "View_Logs" : "訪問日志",
+  "View_Logs" : "觀看Logs",
   "Wait_activation_warning" : "您的帳戶必須由管理員手工啟動後才能登錄。",
   "We_have_sent_password_email" : "我們已經向您發送密碼重置的電子郵件。如果您沒有收到郵件，請重試。",
   "We_have_sent_registration_email" : "我們已經向您發出一封電子郵件，以確認您的注冊。如果您沒有收到郵件，請重試。",

@@ -21,9 +21,12 @@ Template.directMessages.onRendered ->
 		else
 			Tracker.autorun =>
 				Meteor.defer ->
-					Meteor.call 'createDirectMessage', 'bruce1', (err, result) ->
+					Meteor.call 'createDirectMessage', 'Herman_Chang', (err, result) ->
 						if err?
 							return toastr.error err.reason
-					Meteor.call 'createDirectMessage', 'bruce', (err, result) ->
+					Meteor.call 'createDirectMessage', 'pluswu', (err, result) ->
+						if err?
+							return toastr.error err.reason
+					Meteor.call 'createDirectMessage', 'wanchinglienatntu.edu.tw', (err, result) ->
 						if err?
 							return toastr.error err.reason
