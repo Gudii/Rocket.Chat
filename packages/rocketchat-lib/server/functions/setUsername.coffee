@@ -1,10 +1,10 @@
 RocketChat._setUsername = (userId, username) ->
-	username = s.trim username
+	username = s.trim username #remove whitespace
 	if not userId or not username
 		return false
 
 	try
-		nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
+		nameValidation = new RegExp
 	catch
 		nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 

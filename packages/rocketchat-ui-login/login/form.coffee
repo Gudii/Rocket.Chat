@@ -99,7 +99,6 @@ Template.loginForm.events
 
 			Meteor.call 'checkaccount', userName, password, (error, result) ->
 				if (result==200)
-					console.log (result)
 					Meteor.call 'registerUser_mcn', formData, (error, result) ->
 						RocketChat.Button.reset(button)
 
@@ -118,7 +117,6 @@ Template.loginForm.events
 											setLanguage(Meteor.user()?.language)
 				if (result==404)
 								#connect to mcn account
-								console.log (result)
 							loginMethod = 'loginWithPassword'
 							if RocketChat.settings.get('LDAP_Enable')
 								loginMethod = 'loginWithLDAP'

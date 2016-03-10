@@ -17,16 +17,19 @@ Template.directMessages.events
 
 Template.directMessages.onRendered ->
 	switch Meteor.user().username
-		when 'bruce','Herman_Chang','pluswu','wanchinglienatntu.edu.tw' then
+		when 'smSAr4bi5qpFxNDRm','GWwBE8wxtTWxETN8g','dYJamDTs4Ankcbcqi','HHDABfJQ5D6eDZF9F','gcJwMyiqgzpMPTZR5' then
 		else
 			Tracker.autorun =>
 				Meteor.defer ->
-					Meteor.call 'createDirectMessage', 'Herman_Chang', (err, result) ->
+					Meteor.call 'add_consultant', 'GWwBE8wxtTWxETN8g', (err, result) ->
 						if err?
 							return toastr.error err.reason
-					Meteor.call 'createDirectMessage', 'pluswu', (err, result) ->
+					Meteor.call 'add_consultant', 'dYJamDTs4Ankcbcqi', (err, result) ->
 						if err?
 							return toastr.error err.reason
-					Meteor.call 'createDirectMessage', 'wanchinglienatntu.edu.tw', (err, result) ->
+					Meteor.call 'add_consultant', 'gcJwMyiqgzpMPTZR5', (err, result) ->
+						if err?
+							return toastr.error err.reason
+					Meteor.call 'add_consultant', 'HHDABfJQ5D6eDZF9F', (err, result) ->
 						if err?
 							return toastr.error err.reason
