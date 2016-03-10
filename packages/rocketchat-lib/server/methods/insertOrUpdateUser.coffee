@@ -21,7 +21,7 @@ Meteor.methods
 			throw new Meteor.Error 'user-name-is-required', 'Username field is required'
 
 		try
-			nameValidation = new RegExp 
+			nameValidation = new RegExp '^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
 		catch
 			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 

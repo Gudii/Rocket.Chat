@@ -12,7 +12,7 @@ Meteor.methods
 			return username
 
 		try
-			nameValidation = new RegExp
+			nameValidation = new RegExp	'^' + RocketChat.settings.get('UTF8_Names_Validation') + '$'
 		catch
 			nameValidation = new RegExp '^[0-9a-zA-Z-_.]+$'
 
