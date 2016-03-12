@@ -16,8 +16,8 @@ Template.directMessages.events
 		SideNav.openFlex()
 
 Template.directMessages.onRendered ->
-	switch Meteor.user().username
-		when 'smSAr4bi5qpFxNDRm','GWwBE8wxtTWxETN8g','dYJamDTs4Ankcbcqi','HHDABfJQ5D6eDZF9F','gcJwMyiqgzpMPTZR5' then
+	switch Meteor.user()._id
+		when 'smSAr4bi5qpFxNDRm','GWwBE8wxtTWxETN8g','dYJamDTs4Ankcbcqi','HHDABfJQ5D6eDZF9F','gcJwMyiqgzpMPTZR5','v4kXaZzwrB3imJdjt' then
 		else
 			Tracker.autorun =>
 				Meteor.defer ->
