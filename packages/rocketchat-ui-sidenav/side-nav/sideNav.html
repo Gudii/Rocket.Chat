@@ -15,14 +15,14 @@
 						{{#if canShowRoomType}}
 							{{> Template.dynamic template=templateName }}
 						{{/if}}
-					{{/each}}
-
-					<h3 class="history-div">
-						<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
-					</h3>
+					{{/each}}	
 					<h3 class="e-learning">
 						<a href="http://140.112.124.238:8080/JSPLoginLogout/login.jsp" target="_blank">＃教學平台</a>
 					</h3>
+					<h3 class="history-div">
+						<a href="{{pathFor 'privateHistory'}}">{{_ "History"}}</a>
+					</h3>
+
 				</div>
 			</div>
 			<div class="unread-rooms bottom-unread-rooms hidden">
