@@ -14,7 +14,10 @@ Template.directMessages.events
 	'click .add-room': (e, instance) ->
 		SideNav.setFlex "directMessagesFlex"
 		SideNav.openFlex()
-
+	'click .more-direct-messages': ->
+		SideNav.setFlex "listDirectMessagesFlex"
+		SideNav.openFlex()
+		
 Template.directMessages.onRendered ->
 	switch Meteor.user()._id
 		when 'smSAr4bi5qpFxNDRm','GWwBE8wxtTWxETN8g','dYJamDTs4Ankcbcqi','HHDABfJQ5D6eDZF9F','gcJwMyiqgzpMPTZR5','v4kXaZzwrB3imJdjt' then
