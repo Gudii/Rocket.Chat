@@ -40,6 +40,20 @@ Template.admin.helpers
 
 		sections = {}
 		for setting in settings
+			if setting.i18nDefaultQuery?
+				if _.isString(setting.i18nDefaultQuery)
+					i18nDefaultQuery = JSON.parse(setting.i18nDefaultQuery)
+				else
+					i18nDefaultQuery = setting.i18nDefaultQuery
+
+				if not _.isArray(i18nDefaultQuery)
+					i18nDefaultQuery = [i18nDefaultQuery]
+
+				found = 0
+				for item in i18nDefaultQuery
+					if TempSettings.findOne(item)?
+						setting.value = TAPi18n.__(setting._id + '_Default')
+
 			sections[setting.section or ''] ?= []
 			sections[setting.section or ''].push setting
 
@@ -50,6 +64,9 @@ Template.admin.helpers
 				settings: value
 
 		return sectionsArray
+
+	i18nDefaultValue: ->
+		return TAPi18n.__(@_id + '_Default')
 
 	isDisabled: ->
 		if @blocked
@@ -133,7 +150,7 @@ Template.admin.helpers
 	random: ->
 		return Random.id()
 
-	getEditorOptions: ->
+	getEditorOptions: (readOnly = false) ->
 		return {} =
 			lineNumbers: true
 			mode: this.code or "javascript"
@@ -147,6 +164,7 @@ Template.admin.helpers
 			matchTags: true,
 			showTrailingSpace: true
 			highlightSelectionMatches: true
+			readOnly: readOnly
 
 	setEditorOnBlur: (_id) ->
 		Meteor.defer ->
@@ -207,7 +225,7 @@ Template.admin.events
 
 		if not _.isEmpty settings
 			RocketChat.settings.batchSet settings, (err, success) ->
-				return toastr.error TAPi18n.__ 'Error_updating_settings' if err
+				return handleError(err) if err
 				toastr.success TAPi18n.__ 'Settings_updated'
 
 	"click .submit .refresh-clients": (e, t) ->
@@ -231,7 +249,9 @@ Template.admin.events
 				swal.showInputError TAPi18n.__ 'Name_cant_be_empty'
 				return false
 
-			Meteor.call 'addOAuthService', inputValue
+			Meteor.call 'addOAuthService', inputValue, (err) ->
+				if err
+					handleError(err)
 
 	"click .submit .remove-custom-oauth": (e, t) ->
 		name = this.section.replace('Custom OAuth: ', '')
@@ -269,7 +289,8 @@ Template.admin.events
 			reader.onloadend = =>
 				Meteor.call 'setAsset', reader.result, blob.type, @asset, (err, data) ->
 					if err?
-						toastr.error err.reason, TAPi18n.__ err.error
+						handleError(err)
+						# toastr.error err.reason, TAPi18n.__ err.error
 						console.log err
 						return
 
@@ -278,7 +299,7 @@ Template.admin.events
 	"click .expand": (e) ->
 		$(e.currentTarget).closest('.section').removeClass('section-collapsed')
 		$(e.currentTarget).closest('button').removeClass('expand').addClass('collapse').find('span').text(TAPi18n.__ "Collapse")
-		$('.code-mirror-box .CodeMirror').each (index, codeMirror) ->
+		$('.CodeMirror').each (index, codeMirror) ->
 			codeMirror.CodeMirror.refresh()
 
 	"click .collapse": (e) ->
@@ -291,7 +312,8 @@ Template.admin.events
 
 		Meteor.call @value, (err, data) ->
 			if err?
-				toastr.error TAPi18n.__(err.error), TAPi18n.__('Error')
+				err.details = _.extend(error.details || {}, errorTitle: 'Error')
+				handleError(err)
 				return
 
 			args = [data.message].concat data.params

@@ -10,7 +10,7 @@ Template.messages.helpers({
 				ts: 1
 			}
 		});
-	},
+	}
 });
 
 Template.messages.events({
@@ -35,22 +35,13 @@ Template.messages.events({
 	},
 	'click .error': function(event) {
 		return $(event.currentTarget).removeClass('show');
-	},
+	}
 });
 
 Template.messages.onCreated(function() {
 	var self;
 	self = this;
-	self.autorun(function() {
-		self.subscribe('livechat:visitorRoom', visitor.getToken(), function() {
-			var room;
-			room = ChatRoom.findOne();
-			if (room != null) {
-				visitor.setRoom(room._id);
-				RoomHistoryManager.getMoreIfIsEmpty(room._id);
-			}
-		});
-	});
+
 	self.atBottom = true;
 
 	self.updateMessageInputHeight = function(input) {

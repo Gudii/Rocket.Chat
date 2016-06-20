@@ -14,7 +14,7 @@ Template.register.helpers({
 });
 
 Template.register.events({
-	'submit #livechat-registration' (e, instance) {
+	'submit #livechat-registration'(e, instance) {
 		var $email, $name;
 		e.preventDefault();
 		$name = instance.$('input[name=name]');
@@ -48,14 +48,12 @@ Template.register.events({
 			});
 		}
 	},
-	'click .error' (e, instance) {
+	'click .error'(e, instance) {
 		return instance.hideError();
 	}
 });
 
 Template.register.onCreated(function() {
-	this.subscribe('livechat:availableDepartments');
-
 	this.error = new ReactiveVar();
 	this.showError = (msg) => {
 		$('.error').addClass('show');

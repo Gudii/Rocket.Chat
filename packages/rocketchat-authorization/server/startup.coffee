@@ -28,7 +28,8 @@ Meteor.startup ->
 		{ _id: 'edit-privileged-setting', roles : ['admin'] }
 		{ _id: 'edit-room', roles : ['admin', 'moderator', 'owner'] }
 		{ _id: 'manage-assets', roles : ['admin'] }
-		{ _id: 'manage-integrations', roles : ['admin', 'bot'] }
+		{ _id: 'manage-integrations', roles : ['admin'] }
+		{ _id: 'manage-own-integrations', roles : ['bot'] }
 		{ _id: 'manage-oauth-apps', roles : ['admin'] }
 		{ _id: 'mute-user', roles : ['admin', 'moderator', 'owner'] }
 		{ _id: 'remove-user', roles : ['admin', 'moderator', 'owner'] }
@@ -54,12 +55,12 @@ Meteor.startup ->
 			RocketChat.models.Permissions.upsert( permission._id, {$set: permission })
 
 	defaultRoles = [
-		{ name: 'admin', scope: 'Users', description: 'Rocket.Chat admins' }
-		{ name: 'moderator', scope: 'Subscriptions', description: 'Room moderators' }
-		{ name: 'owner', scope: 'Subscriptions', description: 'Room owners' }
-		{ name: 'user', scope: 'Users', description: 'Users' }
-		{ name: 'bot', scope: 'Users', description: 'Bots' }
+		{ name: 'admin', scope: 'Users', description: 'Admin' }
+		{ name: 'moderator', scope: 'Subscriptions', description: 'Moderator' }
+		{ name: 'owner', scope: 'Subscriptions', description: 'Owner' }
+		{ name: 'user', scope: 'Users', description: '' }
+		{ name: 'bot', scope: 'Users', description: '' }
 	]
 
 	for role in defaultRoles
-		RocketChat.models.Roles.createOrUpdate role.name, role.scope, role.description, true
+		RocketChat.models.Roles.upsert { _id: role.name }, { $setOnInsert: { scope: role.scope, description: role.description || '', protected: true } }

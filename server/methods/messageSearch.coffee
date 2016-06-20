@@ -42,12 +42,22 @@ Meteor.methods
 		# Query in message text
 		text = text.trim().replace(/\s\s/g, ' ')
 		if text isnt ''
-			query.$text =
-				$search: text
-
-			options.fields =
-				score:
-					$meta: "textScore"
+			# Regex search
+			if /^\/.+\/[imxs]*$/.test text
+				r = text.split('/')
+				query.msg =
+					$regex: r[1]
+					$options: r[2]
+			else if RocketChat.settings.get 'Message_AlwaysSearchRegExp'
+				query.msg =
+					$regex: text
+					$options: 'i'
+			else
+				query.$text =
+					$search: text
+				options.fields =
+					score:
+						$meta: "textScore"
 
 			# options.sort =
 			# 	score:
@@ -62,7 +72,8 @@ Meteor.methods
 				query.rid = rid
 				try
 					if Meteor.call('canAccessRoom', rid, this.userId) isnt false
-						console.log query
+						if not RocketChat.settings.get 'Message_ShowEditedStatus'
+							options.fields = { 'editedAt': 0 }
 						result.messages = RocketChat.models.Messages.find(query, options).fetch()
 
 

@@ -6,13 +6,17 @@ Template.integrationsIncoming.onCreated ->
 Template.integrationsIncoming.helpers
 
 	hasPermission: ->
-		return RocketChat.authz.hasAllPermission 'manage-integrations'
+		return RocketChat.authz.hasAtLeastOnePermission(['manage-integrations', 'manage-own-integrations'])
 
 	data: ->
 		params = Template.instance().data.params?()
 
 		if params?.id?
-			data = ChatIntegrations.findOne({_id: params.id})
+			data = null
+			if RocketChat.authz.hasAllPermission 'manage-integrations'
+				data = ChatIntegrations.findOne({_id: params.id})
+			else if RocketChat.authz.hasAllPermission 'manage-own-integrations'
+				data = ChatIntegrations.findOne({_id: params.id, "_createdBy._id": Meteor.userId()})
 			if data?
 				data.url = Meteor.absoluteUrl("hooks/#{data._id}/#{data.token}")
 				data.completeToken = "#{data._id}/#{data.token}"
@@ -135,14 +139,17 @@ Template.integrationsIncoming.events
 			html: false
 		, ->
 			Meteor.call "deleteIncomingIntegration", params.id, (err, data) ->
-				swal
-					title: t('Deleted')
-					text: t('Your_entry_has_been_deleted')
-					type: 'success'
-					timer: 1000
-					showConfirmButton: false
+				if err
+					handleError err
+				else
+					swal
+						title: t('Deleted')
+						text: t('Your_entry_has_been_deleted')
+						type: 'success'
+						timer: 1000
+						showConfirmButton: false
 
-				FlowRouter.go "admin-integrations"
+					FlowRouter.go "admin-integrations"
 
 	"click .button-fullscreen": ->
 		codeMirrorBox = $('.code-mirror-box')
@@ -185,11 +192,7 @@ Template.integrationsIncoming.events
 		if params?.id?
 			Meteor.call "updateIncomingIntegration", params.id, integration, (err, data) ->
 				if err?
-					console.log err.error
-					if err.message
-						console.log '\n'+err.message
-						return toastr.error 'See browsers\'s console for more information', TAPi18n.__(err.error)
-					return toastr.error TAPi18n.__(err.error)
+					return handleError(err)
 
 				toastr.success TAPi18n.__("Integration_updated")
 		else
@@ -197,7 +200,7 @@ Template.integrationsIncoming.events
 
 			Meteor.call "addIncomingIntegration", integration, (err, data) ->
 				if err?
-					return toastr.error TAPi18n.__(err.error)
+					return handleError(err)
 
 				toastr.success TAPi18n.__("Integration_added")
 				FlowRouter.go "admin-integrations-incoming", {id: data._id}

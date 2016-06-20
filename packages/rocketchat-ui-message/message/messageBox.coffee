@@ -12,8 +12,12 @@ Template.messageBox.helpers
 			return roomData.name
 	showMarkdown: ->
 		return RocketChat.Markdown
+	showHighlight: ->
+		return RocketChat.Highlight
+	showKatex: ->
+		return RocketChat.katex
 	showFormattingTips: ->
-		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight)
+		return RocketChat.settings.get('Message_ShowFormattingTips') and (RocketChat.Markdown or RocketChat.Highlight or RocketChat.katex)
 	canJoin: ->
 		return !! ChatRoom.findOne { _id: @_id, t: 'c' }
 	subscribed: ->
@@ -24,10 +28,6 @@ Template.messageBox.helpers
 			getInput: ->
 				return template.find('.input-message')
 		}
-	canRecordAudio: ->
-		wavRegex = /audio\/wav|audio\/\*/i
-		wavEnabled = !RocketChat.settings.get("FileUpload_MediaTypeWhiteList") || RocketChat.settings.get("FileUpload_MediaTypeWhiteList").match(wavRegex)
-		return RocketChat.settings.get('Message_AudioRecorderEnabled') and (navigator.getUserMedia? or navigator.webkitGetUserMedia?) and wavEnabled and RocketChat.settings.get('FileUpload_Enabled')
 	usersTyping: ->
 		users = MsgTyping.get @_id
 		if users.length is 0
@@ -103,10 +103,10 @@ Template.messageBox.events
 	'keydown .input-message': (event) ->
 		chatMessages[@_id].keydown(@_id, event, Template.instance())
 
-	"click .editing-commands-cancel > a": (e) ->
+	"click .editing-commands-cancel > button": (e) ->
 		chatMessages[@_id].clearEditing()
 
-	"click .editing-commands-save > a": (e) ->
+	"click .editing-commands-save > button": (e) ->
 		chatMessages[@_id].send(@_id, chatMessages.input)
 
 	'change .message-form input[type=file]': (event, template) ->

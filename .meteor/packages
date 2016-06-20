@@ -14,6 +14,7 @@ blaze-html-templates
 check
 coffeescript
 ddp-rate-limiter
+ecmascript
 ejson
 email
 fastclick
@@ -96,7 +97,7 @@ rocketchat:version
 rocketchat:webrtc
 rocketchat:wordpress
 #rocketchat:chatops
-#rocketchat:hubot
+#rocketchat:internal-hubot
 #rocketchat:irc
 
 konecty:change-case
@@ -106,6 +107,7 @@ konecty:multiple-instances-status
 konecty:nrr
 konecty:user-presence
 
+rocketchat:streamer
 arunoda:streams
 chrismbeckett:toastr
 dispatch:run-as-user

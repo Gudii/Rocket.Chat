@@ -1,8 +1,14 @@
+/* globals CustomFields */
+
 var api = {
 	pageVisited: function(info) {
 		Triggers.processRequest(info);
 
 		Meteor.call('livechat:pageVisited', visitor.getToken(), info);
+	},
+
+	setCustomField: function(key, value) {
+		CustomFields.setCustomField(visitor.getToken(), key, value);
 	}
 };
 

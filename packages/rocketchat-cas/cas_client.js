@@ -20,7 +20,8 @@ var openCenteredPopup = function(url, width, height) {
 	return newwindow;
 };
 
-Meteor.loginWithCas = function(callback) {
+Meteor.loginWithCas = function(options, callback) {
+	options = options || {};
 
 	var credentialToken = Random.id();
 	var login_url = RocketChat.settings.get('CAS_login_url');
