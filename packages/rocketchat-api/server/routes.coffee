@@ -79,7 +79,7 @@ RocketChat.API.v1.addRoute 'channels.setTopic', authRequired: true,
 		unless RocketChat.authz.hasPermission(@userId, 'edit-room', @bodyParams.channel)
 			return RocketChat.API.v1.unauthorized()
 
-		if not RocketChat.saveRoomTopic(@bodyParams.channel, @bodyParams.topic)
+		if not RocketChat.saveRoomTopic(@bodyParams.channel, @bodyParams.topic, @user)
 			return RocketChat.API.v1.failure 'invalid_channel'
 
 		return RocketChat.API.v1.success
@@ -104,3 +104,23 @@ RocketChat.API.v1.addRoute 'channels.create', authRequired: true,
 
 		return RocketChat.API.v1.success
 			channel: RocketChat.models.Rooms.findOne({_id: id.rid})
+
+# List Private Groups a user has access to
+RocketChat.API.v1.addRoute 'groups.list', authRequired: true,
+	get: ->
+		roomIds = _.pluck RocketChat.models.Subscriptions.findByTypeAndUserId('p', @userId).fetch(), 'rid'
+		return { groups: RocketChat.models.Rooms.findByIds(roomIds).fetch() }
+
+# Add All Users to Channel
+RocketChat.API.v1.addRoute 'channel.addall', authRequired: true,
+	post: ->
+
+		id = undefined
+		try
+			Meteor.runAsUser this.userId, =>
+				id = Meteor.call 'addAllUserToRoom', @bodyParams.roomId, []
+		catch e
+			return RocketChat.API.v1.failure e.name + ': ' + e.message
+
+		return RocketChat.API.v1.success
+			channel: RocketChat.models.Rooms.findOne({_id: @bodyParams.roomId})
