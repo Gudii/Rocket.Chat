@@ -425,6 +425,7 @@
   "From" : "来自于",
   "From_Email" : "从电子邮件",
   "From_email_warning" : "<b>警告</b>：<b>From</b>字段来自于邮件服务器的设置。",
+  "Friends" : "朋友",
   "General" : "通用",
   "github_no_public_email" : "在您的GitHub上帐户中，您没有设置任何电子邮件作为公共电子邮件地址。",
   "Give_a_unique_name_for_the_custom_oauth" : "请给自定义 OAuth 设置一个唯一的名称",
