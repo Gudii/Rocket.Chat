@@ -1,4 +1,4 @@
-RocketChat.sendMessage = (user, message, room) ->
+RocketChat.sendMessage = (user, message, room, upsert = false) ->
 	if not user or not message or not room._id
 		return false
 
@@ -18,7 +18,13 @@ RocketChat.sendMessage = (user, message, room) ->
 
 	message = RocketChat.callbacks.run 'beforeSaveMessage', message
 
-	if message._id?
+	# Avoid saving sandstormSessionId to the database
+	sandstormSessionId = null
+	if message.sandstormSessionId
+		sandstormSessionId = message.sandstormSessionId
+		delete message.sandstormSessionId
+
+	if message._id? and upsert
 		_id = message._id
 		delete message._id
 		RocketChat.models.Messages.upsert {_id: _id, 'u._id': message.u._id}, message
@@ -31,6 +37,7 @@ RocketChat.sendMessage = (user, message, room) ->
 	###
 	Meteor.defer ->
 		# Execute all callbacks
+		message.sandstormSessionId = sandstormSessionId
 		RocketChat.callbacks.run 'afterSaveMessage', message, room
 
 	return message

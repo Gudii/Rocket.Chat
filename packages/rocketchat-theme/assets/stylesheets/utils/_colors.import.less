@@ -563,12 +563,11 @@ a.github-fork {
 }
 
 .fixed-title {
-	background: #fff;
+	background-color: @content-background-color;
 	border-bottom-color: @tertiary-background-color;
 }
 
 .cms-page {
-	color: #444;
 	background-color: @content-background-color;
 }
 
@@ -994,6 +993,13 @@ a.github-fork {
 		p {
 			color: @secondary-font-color;
 		}
+		.form-divisor {
+			border-bottom: 1px solid #ddd;
+
+			> span {
+				background-color: @secondary-background-color;
+			}
+		}
 	}
 }
 
@@ -1132,7 +1138,7 @@ a.github-fork {
 		}
 	}
 	.input-text {
-		input {
+		input, select {
 			background-color: transparent;
 			border-bottom-color: #DFDFDF;
 			&.error {

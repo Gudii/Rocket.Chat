@@ -8,32 +8,8 @@ Template.loginForm.helpers
 	showFormLogin: ->
 		return RocketChat.settings.get 'Accounts_ShowFormLogin'
 
-	showName: ->
-		return 'hidden' unless Template.instance().state.get() is 'register'
-
-	showPassword: ->
-		return 'hidden' unless Template.instance().state.get() in ['login', 'register']
-
-	showConfirmPassword: ->
-		return 'hidden' unless Template.instance().state.get() is 'register'
-
-	showEmailOrUsername: ->
-		return 'hidden' unless Template.instance().state.get() is 'login'
-
-	showEmail: ->
-		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification']
-
-	showRegisterLink: ->
-		return 'hidden' unless Template.instance().state.get() is 'login'
-
-	showForgotPasswordLink: ->
-		return 'hidden' unless Template.instance().state.get() is 'login'
-
-	showBackToLoginLink: ->
-		return 'hidden' unless Template.instance().state.get() in ['register', 'forgot-password', 'email-verification', 'wait-activation']
-
-	showSandstorm: ->
-		return Template.instance().state.get() is 'sandstorm'
+	state: (state..., data) ->
+		return state.indexOf(Template.instance().state.get()) > -1
 
 	btnLoginSave: ->
 		switch Template.instance().state.get()
@@ -46,9 +22,6 @@ Template.loginForm.helpers
 			when 'forgot-password'
 				return t('Reset_password')
 
-	waitActivation: ->
-		return Template.instance().state.get() is 'wait-activation'
-
 	loginTerms: ->
 		return RocketChat.settings.get 'Layout_Login_Terms'
 
@@ -58,8 +31,11 @@ Template.loginForm.helpers
 	linkReplacementText: ->
 		return RocketChat.settings.get('Accounts_RegistrationForm_LinkReplacementText')
 
-	passwordresetAllowed: ->
+	passwordResetAllowed: ->
 		return RocketChat.settings.get 'Accounts_PasswordReset'
+
+	requirePasswordConfirmation: ->
+		return RocketChat.settings.get 'Accounts_RequirePasswordConfirmation'
 
 	emailOrUsernamePlaceholder: ->
 		return RocketChat.settings.get('Accounts_EmailOrUsernamePlaceholder') or t("Email_or_username")
@@ -70,6 +46,19 @@ Template.loginForm.helpers
 	hasOnePassword: ->
 		return OnePassword?.findLoginForUrl? && device?.platform?.toLocaleLowerCase() is 'ios'
 
+	customFields: ->
+		if not Template.instance().customFields.get()
+			return []
+
+		customFieldsArray = []
+		for key, value of Template.instance().customFields.get()
+			customFieldsArray.push
+				fieldName: key,
+				field: value
+
+		return customFieldsArray
+
+
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
@@ -79,6 +68,22 @@ Template.loginForm.events
 
 		formData = instance.validate()
 		if formData
+			if instance.state.get() is 'email-verification'
+				Meteor.call 'sendConfirmationEmail', s.trim(formData.email), (err, result) ->
+					RocketChat.Button.reset(button)
+					RocketChat.callbacks.run('userConfirmationEmailRequested');
+					toastr.success t('We_have_sent_registration_email')
+					instance.state.set 'login'
+				return
+
+			if instance.state.get() is 'forgot-password'
+				Meteor.call 'sendForgotPasswordEmail', s.trim(formData.email), (err, result) ->
+					RocketChat.Button.reset(button)
+					RocketChat.callbacks.run('userForgotPasswordEmailRequested');
+					toastr.success t('We_have_sent_password_email')
+					instance.state.set 'login'
+				return
+
 			if instance.state.get() is 'register'
 				formData.secretURL = FlowRouter.getParam 'hash'
 				Meteor.call 'registerUser', formData, (error, result) ->
@@ -88,7 +93,7 @@ Template.loginForm.events
 						if error.reason is 'Email already exists.'
 							toastr.error t 'Email_already_exists'
 						else
-							handleError(error);
+							handleError(error)
 						return
 
 					RocketChat.callbacks.run('userRegistered');
@@ -99,79 +104,23 @@ Template.loginForm.events
 							instance.state.set 'login'
 						else if error?.error is 'error-user-is-not-activated'
 							instance.state.set 'wait-activation'
-			userName = document.getElementsByName('emailOrUsername')[0].value;
-			password = document.getElementsByName('pass')[0].value;
 
-			Meteor.call 'checkaccount', userName, password, (error, result) ->
-				if (result==200)
-					Meteor.call 'registerUser_mcn', formData, (error, result) ->
-						RocketChat.Button.reset(button)
-
-
-						if error?
-								loginMethod = 'loginWithPassword'
-								Meteor[loginMethod] s.trim(formData.emailOrUsername), formData.pass, (error) ->
-									RocketChat.Button.reset(button)
-									if error?
-										if error.error is 'no-valid-email'
-												instance.state.set 'email-verification'
-										else
-											toastr.error t 'User_not_found_or_incorrect_password'
-											return
-											localStorage.setItem('userLanguage', Meteor.user()?.language)
-											setLanguage(Meteor.user()?.language)
-				if (result==404)
-								#connect to mcn account
-							loginMethod = 'loginWithPassword'
-							if RocketChat.settings.get('LDAP_Enable')
-								loginMethod = 'loginWithLDAP'
-
-							Meteor[loginMethod] s.trim(formData.emailOrUsername), formData.pass, (error) ->
-											RocketChat.Button.reset(button)
-											if error?
-												if error.error is 'no-valid-email'
-														instance.state.set 'email-verification'
-												else
-														toastr.error t 'User_not_found_or_incorrect_password'
-												return
-									localStorage.setItem('userLanguage', Meteor.user()?.language)
-									setLanguage(Meteor.user()?.language)
-
-				###else
-					#RocketChat.Button.reset(button)
-					#toastr.error t 'User_not_found_or_incorrect_password'
-					loginMethod = 'loginWithPassword'
-
-
-					Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
-						RocketChat.Button.reset(button)
-						if error?
-							if error.error is 'no-valid-email'
-								instance.state.set 'email-verification'
-							else
-								toastr.error t 'User_not_found_or_incorrect_password'
-							return
-						localStorage.setItem('userLanguage', Meteor.user()?.language)
-						setLanguage(Meteor.user()?.language)###
-
-
-
-			###if instance.state.get() is 'email-verification'
-				Meteor.call 'sendConfirmationEmail', formData.email, (err, result) ->
+			else
+				loginMethod = 'loginWithPassword'
+				if RocketChat.settings.get('LDAP_Enable')
+					loginMethod = 'loginWithLDAP'
+				if RocketChat.settings.get('CROWD_Enable')
+					loginMethod = 'loginWithCrowd'
+				Meteor[loginMethod] s.trim(formData.emailOrUsername), formData.pass, (error) ->
 					RocketChat.Button.reset(button)
-					toastr.success t('We_have_sent_registration_email')
-					instance.state.set 'login'
-				return
-
-			if instance.state.get() is 'forgot-password'
-				Meteor.call 'sendForgotPasswordEmail', formData.email, (err, result) ->
-					RocketChat.Button.reset(button)
-					toastr.success t('We_have_sent_password_email')
-					instance.state.set 'login'
-				return###
-
-
-
+					if error?
+						if error.error is 'no-valid-email'
+							instance.state.set 'email-verification'
+						else
+							toastr.error t 'User_not_found_or_incorrect_password'
+						return
+					localStorage.setItem('userLanguage', Meteor.user()?.language)
+					setLanguage(Meteor.user()?.language)
 
 	'click .register': ->
 		Template.instance().state.set 'register'
@@ -201,6 +150,18 @@ Template.loginForm.events
 
 Template.loginForm.onCreated ->
 	instance = @
+	@customFields = new ReactiveVar
+
+	Tracker.autorun =>
+		Accounts_CustomFields = RocketChat.settings.get('Accounts_CustomFields')
+		if typeof Accounts_CustomFields is 'string' and Accounts_CustomFields.trim() isnt ''
+			try
+				@customFields.set JSON.parse RocketChat.settings.get('Accounts_CustomFields')
+			catch e
+				console.error('Invalid JSON for Accounts_CustomFields')
+		else
+			@customFields.set undefined
+
 	if Meteor.settings.public.sandstorm
 		@state = new ReactiveVar('sandstorm')
 	else if Session.get 'loginDefaultState'
@@ -209,6 +170,24 @@ Template.loginForm.onCreated ->
 		@state = new ReactiveVar('login')
 
 	@validSecretURL = new ReactiveVar(false)
+
+	validateCustomFields = (formObj, validationObj) ->
+		customFields = instance.customFields.get()
+		if not customFields
+			return
+
+		for field, value of formObj when customFields[field]?
+			customField = customFields[field]
+
+			if customField.required is true and not value
+				return validationObj[field] = t('Field_required')
+
+			if customField.maxLength? and value.length > customField.maxLength
+				return validationObj[field] = t('Max_length_is', customField.maxLength)
+
+			if customField.minLength? and value.length < customField.minLength
+				return validationObj[field] = t('Min_length_is', customField.minLength)
+
 
 	@validate = ->
 		formData = $("#login-card").serializeArray()
@@ -229,20 +208,25 @@ Template.loginForm.onCreated ->
 		if instance.state.get() is 'register'
 			if RocketChat.settings.get('Accounts_RequireNameForSignUp') and not formObj['name']
 				validationObj['name'] = t('Invalid_name')
-			if formObj['confirm-pass'] isnt formObj['pass']
+
+			if RocketChat.settings.get('Accounts_RequirePasswordConfirmation') and formObj['confirm-pass'] isnt formObj['pass']
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
 
-		$("#login-card input").removeClass "error"
+			validateCustomFields(formObj, validationObj)
+
+		$("#login-card h2").removeClass "error"
+		$("#login-card input.error, #login-card select.error").removeClass "error"
+		$("#login-card .input-error").text ''
+
 		unless _.isEmpty validationObj
 			button = $('#login-card').find('button.login')
 			RocketChat.Button.reset(button)
 			$("#login-card h2").addClass "error"
-			for key of validationObj
-				$("#login-card input[name=#{key}]").addClass "error"
+			for key, value of validationObj
+				$("#login-card input[name=#{key}], #login-card select[name=#{key}]").addClass "error"
+				$("#login-card input[name=#{key}]~.input-error, #login-card select[name=#{key}]~.input-error").text value
 			return false
 
-		$("#login-card h2").removeClass "error"
-		$("#login-card input.error").removeClass "error"
 		return formObj
 
 	if FlowRouter.getParam('hash')
@@ -252,7 +236,7 @@ Template.loginForm.onCreated ->
 Template.loginForm.onRendered ->
 	Session.set 'loginDefaultState'
 	Tracker.autorun =>
-		RocketChat.callbacks.run('loginPageStateChange', Template.instance().state.get());
+		RocketChat.callbacks.run('loginPageStateChange', this.state.get())
 		switch this.state.get()
 			when 'login', 'forgot-password', 'email-verification'
 				Meteor.defer ->

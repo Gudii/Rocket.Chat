@@ -27,7 +27,7 @@ class IframeLogin {
 				return c.stop();
 			}
 
-			if (this.enabled === true && this.iframeUrl && this.apiUrl && this.apiMethod && FlowRouter.subsReady('userData', 'activeUsers')) {
+			if (this.enabled === true && this.iframeUrl && this.apiUrl && this.apiMethod) {
 				c.stop();
 				if (!Accounts._storedLoginToken()) {
 					this.tryLogin(() => {});
@@ -96,9 +96,7 @@ class IframeLogin {
 				token: token
 			}],
 			userCallback: (err) => {
-				if (err) {
-					callback(err);
-				}
+				callback(err);
 			}
 		});
 	}
@@ -132,8 +130,6 @@ window.addEventListener('message', (e) => {
 	if (! _.isObject(e.data)) {
 		return;
 	}
-
-	console.log(e);
 
 	switch (e.data.event) {
 		case 'try-iframe-login':
@@ -259,6 +255,10 @@ window.addEventListener('message', (e) => {
 
 		case 'call-google-login':
 			const googleLoginSuccess = (response) => {
+				if (typeof response.oauthToken === 'string' && typeof response.accessToken !== 'string') {
+					response.accessToken = response.oauthToken;
+				}
+
 				console.log('google-login-success', response);
 				e.source.postMessage({
 					event: 'google-login-success',
