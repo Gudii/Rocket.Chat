@@ -10,8 +10,6 @@ Meteor.startup ->
 	window.lastMessageWindow = {}
 	window.lastMessageWindowHistory = {}
 
-	TAPi18n.conf.i18n_files_route = Meteor._relativeToSiteRootUrl('/tap-i18n')
-
 	@defaultAppLanguage = ->
 		lng = window.navigator.userLanguage || window.navigator.language || 'en'
 		# Fix browsers having all-lowercase language settings eg. pt-br, en-us
@@ -39,10 +37,10 @@ Meteor.startup ->
 		else
 			$('html').removeClass "rtl"
 
-		language = language.split('-').shift()
+		#language = language.split('-').shift()
 		TAPi18n.setLanguage(language)
 
-		language = language.toLowerCase()
+		#language = language.toLowerCase()
 		if language isnt 'en'
 			Meteor.call 'loadLocale', language, (err, localeFn) ->
 				Function(localeFn)()

@@ -1,14 +1,12 @@
 Future = Npm.require( 'fibers/future' )
 Meteor.methods
-  checkaccount: (userName, password) ->
+  acc_verify: (formData) ->
     future = new Future()
-    Meteor.http.call("POST", "http://140.112.124.238/api/acc_query",
-      {data: {username: userName, password: password}},
+    Meteor.http.call("POST", "http://140.112.124.238/api/acc_verify",
+      {data: {username: formData.emailOrUsername, password: formData.pass}},
       (error, result) ->
-        if result.statusCode == 200
-          future.return(result.statusCode)
-        else
-          future.return(result.statusCode)
+
+          future.return(result)
     )
 
     return future.wait()

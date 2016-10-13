@@ -8,15 +8,24 @@
 				{{_ "More_unreads"}} <i class="icon-up-big"></i>
 			</div>
 			<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
+				<div class="select-bar">
+					<table style="width:100%">
+						<tr>
+							<th id="default" class="tabbutton" onclick="opentab(event,'channels')"><img src="https://imageshack.com/i/pltlJQq0p"></th>
+							<th class="tabbutton" onclick="opentab(event,'directMessages')"><img src="https://imageshack.com/i/powzAKLxp"></th>
+							<th class="tabbutton" onclick="opentab(event,'privateGroups')"><img src="https://imageshack.com/i/pmksFTELp"></th>
+							<th><button id="b_href"><img src="http://imageshack.com/a/img924/4864/77UWd5.png"></button></th>
+						</tr>
+					</table>
+				</div>
 				<div class="wrapper">
-					<h3 class="e-learning">
-						<a href="https://mefeu.csie.ntu.edu.tw:8443/JSPLoginLogout/login.jsp" target="_blank">✭教學平台</a>
-					</h3>
 					{{ > unreadRooms }}
 
 					{{#each roomType}}
 						{{#if canShowRoomType}}
-							{{> Template.dynamic template=templateName }}
+							<div id="{{ templateName }}" class="tabcontent">
+								{{> Template.dynamic template=templateName }}
+							</div>
 						{{/if}}
 					{{/each}}
 
@@ -38,7 +47,6 @@
 			<span class="arrow bottom"></span>
 		{{/if}}
 		<footer class="footer">
-			<!--{{{footer}}}-->
 		</footer>
 	</aside>
 </template>

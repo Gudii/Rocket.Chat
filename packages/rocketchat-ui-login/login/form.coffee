@@ -13,7 +13,7 @@ Template.loginForm.helpers
 
 	btnLoginSave: ->
 		switch Template.instance().state.get()
-			when 'register'
+			when 'register', 'Need_Verify'
 				return t('Submit')
 			when 'login'
 				return t('Login')
@@ -21,6 +21,7 @@ Template.loginForm.helpers
 				return t('Send_confirmation_email')
 			when 'forgot-password'
 				return t('Reset_password')
+
 
 	loginTerms: ->
 		return RocketChat.settings.get 'Layout_Login_Terms'
@@ -58,7 +59,9 @@ Template.loginForm.helpers
 
 		return customFieldsArray
 
-
+window.uid = {}
+window.account_email = {}
+window.account_pass = {}
 Template.loginForm.events
 	'submit #login-card': (event, instance) ->
 		event.preventDefault()
@@ -67,6 +70,7 @@ Template.loginForm.events
 		RocketChat.Button.loading(button)
 
 		formData = instance.validate()
+		#console.log ("uid = " + uid)
 		if formData
 			if instance.state.get() is 'email-verification'
 				Meteor.call 'sendConfirmationEmail', s.trim(formData.email), (err, result) ->
@@ -76,13 +80,52 @@ Template.loginForm.events
 					instance.state.set 'login'
 				return
 
-			if instance.state.get() is 'forgot-password'
+			###if instance.state.get() is 'forgot-password'
 				Meteor.call 'sendForgotPasswordEmail', s.trim(formData.email), (err, result) ->
 					RocketChat.Button.reset(button)
 					RocketChat.callbacks.run('userForgotPasswordEmailRequested');
 					toastr.success t('We_have_sent_password_email')
 					instance.state.set 'login'
-				return
+				return###
+
+			if instance.state.get() is 'Need_Verify'
+				Meteor.call 'certificate_code', window.uid, formData, window.account_email, window.account_pass, (error, result) ->
+					RocketChat.Button.reset(button)
+					#console.log (result)
+					if result.statusCode == 200
+						Meteor.call 'findUser', window.account_email, window.account_pass, (error, result) ->
+							RocketChat.Button.reset(button)
+							if result.status
+								#console.log ("OK")
+								loginMethod = 'loginWithPassword'
+
+								Meteor[loginMethod] result.email, result.password, (error) ->
+									RocketChat.Button.reset(button)
+									if error?
+										if error.error is 'no-valid-email'
+											instance.state.set 'email-verification'
+										else
+											toastr.error t 'User_not_found_or_incorrect_password'
+											return
+							else
+								Meteor.call 'registerUser_mcn', result.email, result.password, (error, result) ->
+									RocketChat.Button.reset(button)
+									#console.log (result)
+									loginMethod = 'loginWithPassword'
+									Meteor[loginMethod] s.trim(result.email), result.password, (error) ->
+
+										if error?
+											if error.error is 'no-valid-email'
+													instance.state.set 'email-verification'
+											else
+												toastr.error t 'User_not_found_or_incorrect_password'
+												return
+												localStorage.setItem('userLanguage', Meteor.user()?.language)
+												setLanguage(Meteor.user()?.language)
+					else
+						#console.log ("Incorrect code")
+						toastr.error t 'Incorrect code'
+						return
 
 			if instance.state.get() is 'register'
 				formData.secretURL = FlowRouter.getParam 'hash'
@@ -105,22 +148,39 @@ Template.loginForm.events
 						else if error?.error is 'error-user-is-not-activated'
 							instance.state.set 'wait-activation'
 
-			else
-				loginMethod = 'loginWithPassword'
-				if RocketChat.settings.get('LDAP_Enable')
-					loginMethod = 'loginWithLDAP'
-				if RocketChat.settings.get('CROWD_Enable')
-					loginMethod = 'loginWithCrowd'
-				Meteor[loginMethod] s.trim(formData.emailOrUsername), formData.pass, (error) ->
+			if instance.state.get 'login'
+				Meteor.call 'acc_verify', formData, (error, result) ->
 					RocketChat.Button.reset(button)
-					if error?
-						if error.error is 'no-valid-email'
-							instance.state.set 'email-verification'
-						else
-							toastr.error t 'User_not_found_or_incorrect_password'
-						return
-					localStorage.setItem('userLanguage', Meteor.user()?.language)
-					setLanguage(Meteor.user()?.language)
+					#console.log (result)
+					if (result.statusCode == 200)
+						data = JSON.parse(result.data)
+						#console.log (data.msg)
+						window.uid = data.uid
+						window.account_email = formData.emailOrUsername
+						window.account_pass = formData.pass
+						if data.msg == 'Need Verify'
+							#console.log ("Need Verify")
+							instance.state.set 'Need_Verify'
+							#code = formData.captcha
+
+						else if data.msg == 'Verified'
+							#console.log ("Verified")
+							#RocketChat.Button.reset(button)
+
+							loginMethod = 'loginWithPassword'
+
+							Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
+								RocketChat.Button.reset(button)
+								if error?
+									if error.error is 'no-valid-email'
+										instance.state.set 'email-verification'
+									else
+										toastr.error t 'User_not_found_or_incorrect_password'
+										return
+
+					else if result.statusCode == 404
+						#console.log ("error")
+						toastr.error t 'User_not_found_or_incorrect_password'
 
 	'click .register': ->
 		Template.instance().state.set 'register'
@@ -197,11 +257,11 @@ Template.loginForm.onCreated ->
 		for field in formData
 			formObj[field.name] = field.value
 
-		if instance.state.get() isnt 'login'
+		if instance.state.get() isnt 'login' and instance.state.get() isnt 'Need_Verify'
 			unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
 				validationObj['email'] = t('Invalid_email')
 
-		if instance.state.get() isnt 'forgot-password'
+		if instance.state.get() isnt 'forgot-password' and instance.state.get() isnt 'Need_Verify'
 			unless formObj['pass']
 				validationObj['pass'] = t('Invalid_pass')
 
@@ -213,6 +273,13 @@ Template.loginForm.onCreated ->
 				validationObj['confirm-pass'] = t('Invalid_confirm_pass')
 
 			validateCustomFields(formObj, validationObj)
+
+		if instance.state.get() is 'Need_Verify'
+			unless formObj['captcha']
+				validationObj['captcha'] = t('Invalid_code')
+			#console.log (formObj)
+			#console.log (validationObj)
+
 
 		$("#login-card h2").removeClass "error"
 		$("#login-card input.error, #login-card select.error").removeClass "error"
@@ -226,6 +293,7 @@ Template.loginForm.onCreated ->
 				$("#login-card input[name=#{key}], #login-card select[name=#{key}]").addClass "error"
 				$("#login-card input[name=#{key}]~.input-error, #login-card select[name=#{key}]~.input-error").text value
 			return false
+
 
 		return formObj
 

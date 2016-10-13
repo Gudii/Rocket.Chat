@@ -59,7 +59,6 @@ Template.accountPreferences.onCreated ->
 
 		reload = false
 		selectedLanguage = $('#language').val()
-
 		if localStorage.getItem('userLanguage') isnt selectedLanguage
 			localStorage.setItem 'userLanguage', selectedLanguage
 			data.language = selectedLanguage

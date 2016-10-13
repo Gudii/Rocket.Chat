@@ -91,6 +91,13 @@
 								<input type="email" name='email' placeholder='{{_ "Email"}}' />
 							</div>
 						{{/if}}
+
+
+						{{#if state 'Need_Verify'}}
+							<div class='input-text active'>
+								<input type="text" name='captcha' placeholder='{{_ "Captcha"}}' />
+							</div>
+							{{/if}}
 					</div>
 
 					<div class="submit">
@@ -99,9 +106,9 @@
 
 					{{#if state 'login'}}
 						{{#if registrationAllowed}}
-							<div class="register">
+							<!--<div class="register">
 								<button type="button">{{_ 'Register'}}</button>
-							</div>
+							</div>-->
 						{{else}}
 							{{#if linkReplacementText}}
 								{{{linkReplacementText}}}
