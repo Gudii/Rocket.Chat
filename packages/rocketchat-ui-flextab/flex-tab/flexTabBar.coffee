@@ -8,16 +8,28 @@ Template.flexTabBar.helpers
 	visible: ->
 		if @groups.indexOf(RocketChat.TabBar.getVisibleGroup()) is -1
 			return 'hidden'
+		
 
 Template.flexTabBar.events
 	'click .tab-button': (e, t) ->
 		e.preventDefault()
+		
+		console.log(RocketChat.TabBar.isFlexOpen())
+		temp = document.getElementsByClassName("flex-tab-bar")
+		console.log(temp)
+		thebar = temp[0]
+		#if thebar.style.display is "none"
+		#	thebar.style.display = "block"
+		#else
+		#	thebar.style.display = "none"
 
 		if RocketChat.TabBar.isFlexOpen() and RocketChat.TabBar.getTemplate() is @template
+			thebar.style.display = "none"
 			RocketChat.TabBar.closeFlex()
 			$('.flex-tab').css('max-width', '')
 			$('.main-content').css('right', '')
 		else
+			thebar.style.display = "block"
 			if not @openClick? or @openClick(e,t)
 				if @width?
 					$('.flex-tab').css('max-width', "#{@width}px")

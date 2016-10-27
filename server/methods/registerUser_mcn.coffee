@@ -7,7 +7,7 @@ Meteor.methods
 		else if RocketChat.settings.get('Accounts_RegistrationForm') is 'Secret URL' and (not account.secretURL or account.secretURL isnt RocketChat.settings.get('Accounts_RegistrationForm_SecretURL'))
 			throw new Meteor.Error 'error-user-registration-secret', 'User registration is only allowed via Secret URL', { method: 'registerUser' }###
 
-		RocketChat.validateEmailDomain(account_email);
+		#RocketChat.validateEmailDomain(account_email);
 
 		userData =
 			email: account_email

@@ -284,6 +284,9 @@ Template.room.events
 		instance.setUserDetail @username
 
 	'click .user-card-message': (e, instance) ->
+		temp = document.getElementsByClassName("flex-tab-bar")[0]
+		console.log(temp)
+		temp.style.display = "block"
 		roomData = Session.get('roomData' + this._arguments[1].rid)
 		if roomData.t in ['c', 'p', 'd']
 			instance.setUserDetail this._arguments[1].u.username
