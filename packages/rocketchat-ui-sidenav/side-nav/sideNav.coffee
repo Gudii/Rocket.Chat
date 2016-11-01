@@ -55,8 +55,26 @@ Template.sideNav.events
 		menu.updateUnreadBars()
 
 	'click #b_href': ->
-		win = window.open('https://mefeu.csie.ntu.edu.tw:8443/JSPLoginLogout/login.jsp', '_blank')
-		win.focus()
+		#win = window.open('https://mefeu.csie.ntu.edu.tw:8443/JSPLoginLogout/login.jsp', '_blank')
+		#win.focus()
+		loginJSON = {}
+		#console.log (Session.get("password"))
+		loginJSON.username = Meteor.user().emails[0].address
+		#loginJSON.password = Session.get("password")
+		console.log (loginJSON.username)
+		
+		src = JSON.stringify(loginJSON)
+
+		len = src.length
+		i = 0
+		key = 7
+		product = ""
+		while i<len
+			char_code = src.charCodeAt(i)
+			product = product + String.fromCharCode(char_code^key)
+			i++
+		$("#jumpingData").val(product)
+		$("#jumpingForm").submit()
 
 Template.sideNav.onRendered ->
 	SideNav.init()

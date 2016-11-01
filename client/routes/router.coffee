@@ -107,6 +107,39 @@ FlowRouter.route '/register/:hash',
 	action: (params) ->
 		BlazeLayout.render 'secretURL'
 
+FlowRouter.route '/jump',
+	name: 'single_sign_on'
+	action: (params,queryParams)->
+		#console.log (queryParams)
+		src = queryParams.token
+		#console.log ("src: " + src)
+		len = src.length
+		#console.log ("len: " + len)
+		i = 0
+		key = 7
+		product = ""
+		while i < len
+			char_code = src.charCodeAt(i)
+			product = product + String.fromCharCode(char_code^key)
+			i++
+		#console.log (product)
+		res = product.split(",")
+		#console.log (res)
+		email = res[0].substring(13).split("\"")
+		#console.log (email[0])
+		pass = res[1].substring(12).split("\"")
+		#console.log (pass[0])
+		Session.set("password",pass[0])
+		loginMethod = 'loginWithPassword'
+
+		Meteor[loginMethod] email[0], pass[0], (error) ->
+			if error?
+				if error.error is 'no-valid-email'
+					instance.state.set 'email-verification'
+				else
+					toastr.error t 'User_not_found_or_incorrect_password'
+					return
+		FlowRouter.go 'home'
 		# if RocketChat.settings.get('Accounts_RegistrationForm') is 'Secret URL'
 		# 	Meteor.call 'checkRegistrationSecretURL', params.hash, (err, success) ->
 		# 		if success
