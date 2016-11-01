@@ -15,9 +15,7 @@ Template.flexTabBar.events
 		e.preventDefault()
 		
 		console.log(RocketChat.TabBar.isFlexOpen())
-		temp = document.getElementsByClassName("flex-tab-bar")
-		console.log(temp)
-		thebar = temp[0]
+		thebar = document.getElementsByClassName("flex-tab-bar")[0]
 		#if thebar.style.display is "none"
 		#	thebar.style.display = "block"
 		#else

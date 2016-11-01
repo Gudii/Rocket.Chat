@@ -92,6 +92,8 @@ Template.adminUsers.events
 			RocketChat.TabBar.openFlex()
 
 	'click .user-info': (e) ->
+		thebar = document.getElementsByClassName("flex-tab-bar")[0]
+		thebar.style.display = "block"
 		e.preventDefault()
 		RocketChat.TabBar.setTemplate 'adminUserInfo'
 		RocketChat.TabBar.setData Meteor.users.findOne @_id
