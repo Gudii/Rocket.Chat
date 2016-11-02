@@ -4,9 +4,6 @@
 			{{> accountBox }}
 		</header>
 		{{#if currentUser}}
-			<div class="unread-rooms top-unread-rooms hidden">
-				{{_ "More_unreads"}} <i class="icon-up-big"></i>
-			</div>
 			<div class="rooms-list" aria-label="{{_ "Channels"}}" role="region">
 				<div class="select-bar">
 					<table style="width:100%">
@@ -17,6 +14,9 @@
 							<th><button id="b_href"><img src="/images/logo/Elearning.png"></button></th>
 						</tr>
 					</table>
+				</div>
+				<div class="unread-rooms top-unread-rooms hidden">
+					{{_ "More_unreads"}} <i class="icon-up-big"></i>
 				</div>
 				<div class="wrapper">
 					{{ > unreadRooms }}
