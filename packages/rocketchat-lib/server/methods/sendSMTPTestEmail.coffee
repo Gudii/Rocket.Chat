@@ -1,5 +1,8 @@
 Meteor.methods
-	sendSMTPTestEmail: ->
+	sendSMTPTestEmail: (target) ->
+
+		console.log (target)
+
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'sendSMTPTestEmail' }
 
@@ -16,7 +19,7 @@ Meteor.methods
 
 		try
 			Email.send
-				to: user.emails[0].address
+				to: target
 				from: RocketChat.settings.get('From_Email')
 				subject: "SMTP Test Email"
 				html: header + "<p>You have successfully sent an email</p>" + footer
@@ -34,4 +37,4 @@ DDPRateLimiter.addRule
 	name: 'sendSMTPTestEmail'
 	userId: (userId) ->
 		return true
-, 1, 1000
+, 10, 1000

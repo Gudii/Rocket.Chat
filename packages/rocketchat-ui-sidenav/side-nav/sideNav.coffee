@@ -56,13 +56,31 @@ Template.sideNav.events
 
 
 	'click #b_href': ->
+		#console.log(RocketChat.models.Users.find().fetch())
+		
+		temp = RocketChat.models.Users.find({
+				fields: {
+					username: 1,
+				}
+			}).fetch()
+		console.log (temp)
+		#nthu yuan
+		###j=0
+		while j<temp.length
+			console.log (temp[j].emails[0].address)
+			#Meteor.call 'sendSMTPEmail', "wasdx777@gmail.com", temp[j].emails[0].address, "test", "test", (error, result) -> 
+			#	console.log ("OK")
+			Meteor.call 'sendSMTPEmail', temp[j].emails[0].address, (error, result) -> 
+				console.log (result)
+			j++###
+
 		#win = window.open('https://mefeu.csie.ntu.edu.tw:8443/JSPLoginLogout/login.jsp', '_blank')
 		#win.focus()
 		loginJSON = {}
 		#console.log (Session.get("password"))
 		loginJSON.username = Meteor.user().emails[0].address
 		#loginJSON.password = Session.get("password")
-		console.log (loginJSON.username)
+		#console.log (loginJSON.username)
 
 		src = JSON.stringify(loginJSON)
 
