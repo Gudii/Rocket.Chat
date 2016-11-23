@@ -128,8 +128,7 @@ FlowRouter.route '/jump',
 		email = res[0].substring(13).split("\"")
 		#console.log (email[0])
 		pass = res[1].substring(12).split("\"")
-		#console.log (pass[0])
-		Session.set("password",pass[0])
+		localStorage.setItem('password',pass[0])
 		loginMethod = 'loginWithPassword'
 
 		Meteor[loginMethod] email[0], pass[0], (error) ->

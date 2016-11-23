@@ -53,6 +53,9 @@ Template.loginForm.helpers
 
 		customFieldsArray = []
 		for key, value of Template.instance().customFields.get()
+			if value.hideFromForm is true
+				continue
+
 			customFieldsArray.push
 				fieldName: key,
 				field: value
@@ -155,7 +158,7 @@ Template.loginForm.events
 					if (result.statusCode == 200)
 						data = JSON.parse(result.data)
 						#console.log (data.msg)
-						Session.set("password",formData.pass)
+						localStorage.setItem('password',formData.pass)
 						window.uid = data.uid
 						window.account_email = formData.emailOrUsername
 						window.account_pass = formData.pass
@@ -207,6 +210,13 @@ Template.loginForm.events
 			console.log 'OnePassword errorCallback', arguments
 
 		OnePassword.findLoginForUrl(succesCallback, errorCallback, Meteor.absoluteUrl())
+
+	'focus .input-text input': (event) ->
+		$(event.currentTarget).parents('.input-text').addClass('focus')
+
+	'blur .input-text input': (event) ->
+		if event.currentTarget.value is ''
+			$(event.currentTarget).parents('.input-text').removeClass('focus')
 
 
 Template.loginForm.onCreated ->
@@ -261,6 +271,10 @@ Template.loginForm.onCreated ->
 		if instance.state.get() isnt 'login' and instance.state.get() isnt 'Need_Verify'
 			unless formObj['email'] and /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]+\b/i.test(formObj['email'])
 				validationObj['email'] = t('Invalid_email')
+
+		if instance.state.get() is 'login'
+			unless formObj['emailOrUsername']
+				validationObj['emailOrUsername'] = t('Invalid_email')
 
 		if instance.state.get() isnt 'forgot-password' and instance.state.get() isnt 'Need_Verify'
 			unless formObj['pass']

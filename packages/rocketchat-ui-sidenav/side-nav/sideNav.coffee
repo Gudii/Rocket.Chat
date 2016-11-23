@@ -61,9 +61,7 @@ Template.sideNav.events
 		loginJSON = {}
 		#console.log (Session.get("password"))
 		loginJSON.username = Meteor.user().emails[0].address
-		#loginJSON.password = Session.get("password")
-		console.log (loginJSON.username)
-
+		loginJSON.password = localStorage.getItem('password')
 		src = JSON.stringify(loginJSON)
 
 		len = src.length
