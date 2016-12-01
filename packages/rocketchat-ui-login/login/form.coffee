@@ -185,6 +185,17 @@ Template.loginForm.events
 					else if result.statusCode == 404
 						#console.log ("error")
 						toastr.error t 'User_not_found_or_incorrect_password'
+				loginMethod = 'loginWithPassword'
+
+				###Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
+					RocketChat.Button.reset(button)
+					if error?
+						if error.error is 'no-valid-email'
+							instance.state.set 'email-verification'
+						else
+							toastr.error t 'User_not_found_or_incorrect_password'
+							return		###
+
 
 	'click .register': ->
 		Template.instance().state.set 'register'

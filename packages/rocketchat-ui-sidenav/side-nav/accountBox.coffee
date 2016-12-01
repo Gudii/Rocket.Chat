@@ -53,6 +53,11 @@ Template.accountBox.events
 		SideNav.openFlex()
 		FlowRouter.go 'admin-info'
 
+	'click #handin': ->
+		SideNav.closeFlex()
+		FlowRouter.go 'handin'
+
+
 	'click .account-link': (event) ->
 		event.stopPropagation();
 		event.preventDefault();

@@ -56,6 +56,8 @@ Template.sideNav.events
 
 
 	'click #b_href': ->
+		temp = Meteor.users.find().fetch()
+		console.log (temp)
 		#win = window.open('https://mefeu.csie.ntu.edu.tw:8443/JSPLoginLogout/login.jsp', '_blank')
 		#win.focus()
 		loginJSON = {}

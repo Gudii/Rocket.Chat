@@ -1,7 +1,5 @@
 Meteor.methods
-	sendSMTPTestEmail: (target) ->
-
-		console.log (target)
+	sendSMTPEmail: (from,to,subject,body) ->
 
 		if not Meteor.userId()
 			throw new Meteor.Error 'error-invalid-user', "Invalid user", { method: 'sendSMTPTestEmail' }
@@ -15,26 +13,26 @@ Meteor.methods
 		header = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Header') || '');
 		footer = RocketChat.placeholders.replace(RocketChat.settings.get('Email_Footer') || '');
 
-		console.log 'Sending test email to ' + user.emails[0].address
+		console.log 'Sending test email to ' + to
 
 		try
 			Email.send
-				to: target
-				from: RocketChat.settings.get('From_Email')
-				subject: "SMTP Test Email"
-				html: header + "<p>You have successfully sent an email</p>" + footer
+				to: to
+				from: from
+				subject: subject
+				html: header + "<p>" + body + "</p>" + footer
 		catch error
 			throw new Meteor.Error 'error-email-send-failed', 'Error trying to send email: ' + error.message, { method: 'sendSMTPTestEmail', message: error.message }
 
 		return {
 			message: "Your_mail_was_sent_to_s"
-			params: [user.emails[0].address]
+			params: to
 		}
 
 # Limit a user to sending 1 test mail/second
 DDPRateLimiter.addRule
 	type: 'method'
-	name: 'sendSMTPTestEmail'
+	name: 'sendSMTPEmail'
 	userId: (userId) ->
 		return true
 , 10, 1000

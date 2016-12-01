@@ -107,6 +107,7 @@ FlowRouter.route '/register/:hash',
 	action: (params) ->
 		BlazeLayout.render 'secretURL'
 
+#Gudi
 FlowRouter.route '/jump',
 	name: 'single_sign_on'
 	action: (params,queryParams)->
@@ -139,6 +140,13 @@ FlowRouter.route '/jump',
 					toastr.error t 'User_not_found_or_incorrect_password'
 					return
 		FlowRouter.go 'home'
+
+	FlowRouter.route '/handin',
+		name: 'handin'
+
+		action: ->
+
+			BlazeLayout.render 'main', {center: 'handin'}
 		# if RocketChat.settings.get('Accounts_RegistrationForm') is 'Secret URL'
 		# 	Meteor.call 'checkRegistrationSecretURL', params.hash, (err, success) ->
 		# 		if success

@@ -4,21 +4,18 @@ Template.mailer.helpers
 
 Template.mailer.events
 	'click .send': (e, t) ->
+
 		e.preventDefault()
-		from = $(t.find('[name=from]')).val()
+
 		subject = $(t.find('[name=subject]')).val()
 		body = $(t.find('[name=body]')).val()
-		dryrun = $(t.find('[name=dryrun]:checked')).val()
-		query = $(t.find('[name=query]')).val()
+		temp = RocketChat.models.Users.find().fetch()
+		console.log (temp)
+		i=0
+		while i<temp.length
+			console.log (temp[i])
+			Meteor.call 'sendSMTPEmail', "admin@hconsult.com", temp[i].emails[0].address, subject, body, (error, result) ->
+				console.log ("OK")
+			i++
 
-		unless from
-			toastr.error TAPi18n.__('error-invalid-from-address')
-			return
-
-		if body.indexOf('[unsubscribe]') is -1
-			toastr.error TAPi18n.__('error-missing-unsubscribe-link')
-			return
-
-		Meteor.call 'Mailer.sendMail', from, subject, body, dryrun, query, (err) ->
-			return handleError(err) if err
-			toastr.success TAPi18n.__('The_emails_are_being_sent')
+			#nthu yuan

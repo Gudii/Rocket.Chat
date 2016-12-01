@@ -38,6 +38,7 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/starredRooms.html', 'client');
 	api.addFiles('side-nav/unreadRooms.html', 'client');
 	api.addFiles('side-nav/userStatus.html', 'client');
+	api.addFiles('side-nav/handin.html', 'client'); // Gudi
 
 	api.addFiles('side-nav/accountBox.coffee', 'client');
 	api.addFiles('side-nav/channels.coffee', 'client');
@@ -56,6 +57,7 @@ Package.onUse(function(api) {
 	api.addFiles('side-nav/sideNav.coffee', 'client');
 	api.addFiles('side-nav/starredRooms.coffee', 'client');
 	api.addFiles('side-nav/unreadRooms.coffee', 'client');
+	api.addFiles('side-nav/handin.coffee', 'client'); // Gudi
 });
 
 Npm.depends({
