@@ -17,6 +17,27 @@
 						{{#unless isReady}}<i class="icon-spin"></i>{{/unless}}
 					</div>
 				</form>
+				<form>
+					<div class="rocket-form">
+						<fieldset>
+							<div class="input-line">
+								<label>{{_ "Email_subject"}}</label>
+								<div>
+									<input type="text" name="subject" value="" />
+								</div>
+							</div>
+							<div class="input-line">
+								<label>{{_ "Email_body"}}</label>
+								<div>
+									<textarea name="body" rows="10" style="height: auto"></textarea>
+								</div>
+							</div>
+						</fieldset>
+						<div class="submit">
+							<button class="button send"><i class="icon-send"></i><span>{{_ "Send_email"}}</span></button>
+						</div>
+					</div>
+				</form>
 				<div class="results">
 					{{{_ "Showing_results" users.length}}}
 				</div>
