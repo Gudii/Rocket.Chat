@@ -19,7 +19,7 @@
 					<button data-status="offline" class="status offline"><span>{{_ "Invisible"}}</span></button>
 					<button id="account" class='account-link'><i class="icon-sliders"></i><span>{{_ "My_Account"}}</span></button>
 					{{#each registeredMenus}}
-						<a href="{{pathFor href}}" class="account-box-item"><i class="{{icon}}"></i><span>{{name}}</span></a>
+						<button class="account-box-item"><i class="{{icon}}"></i><span>{{name}}</span></button>
 					{{/each}}
 					<button id="handin"><i class="icon-cloud"></i><span>{{_ "Handin(Not ready)"}}</span></button><!--Gudi-->
 					{{#if showAdminOption }}

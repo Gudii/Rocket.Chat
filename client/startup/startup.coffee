@@ -1,3 +1,5 @@
+import moment from 'moment'
+
 Meteor.startup ->
 	TimeSync.loggingEnabled = false
 
@@ -43,7 +45,7 @@ Meteor.startup ->
 		#language = language.toLowerCase()
 		if language isnt 'en'
 			Meteor.call 'loadLocale', language, (err, localeFn) ->
-				Function(localeFn)()
+				Function(localeFn).call({moment: moment});
 				moment.locale(language)
 
 	Meteor.subscribe("userData", () ->
@@ -57,7 +59,9 @@ Meteor.startup ->
 
 		status = undefined
 		Tracker.autorun ->
-		  if Meteor.user()?.status isnt status
-		    status = Meteor.user().status
-		    fireGlobalEvent('status-changed', status)
+			return if not Meteor.userId()
+
+			if Meteor.user()?.status isnt status
+				status = Meteor.user().status
+				fireGlobalEvent('status-changed', status)
 	)
