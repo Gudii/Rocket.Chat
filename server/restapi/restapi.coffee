@@ -18,6 +18,32 @@ Api.addRoute 'publicRooms', authRequired: true,
 		rooms = RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
 
+Api.addRoute 'changepassword', authRequired: false, #NTHU
+	post:
+		action: ->
+			unless this.bodyParams.username
+				return 'username is empty'
+			user = RocketChat.models.Users.findOneByEmailAddress this.bodyParams.username
+			this.bodyParams.old_password = Package.sha.SHA256(this.bodyParams.old_password)
+			checkPassword = (user, currentPassword) ->
+				unless s.trim(user?.services?.password?.bcrypt)
+					return true
+
+				unless currentPassword
+					return false
+
+				passCheck = Accounts._checkPassword(user, { digest: currentPassword, algorithm: 'sha-256' });
+				if passCheck.error
+					return false
+				return true
+
+			if this.bodyParams.new_password?
+				unless checkPassword user, this.bodyParams.old_password
+					return 'Invalid password'
+			new_password = _.trim this.bodyParams.new_password
+			Accounts.setPassword user._id, new_password, { logout: false }
+			return 'success'
+
 ###
 @api {get} /joinedRooms Get joined rooms.
 ###
@@ -233,7 +259,7 @@ Api.addRoute 'bulk/createRoom', authRequired: true,
 					Meteor.runAsUser this.userId, () =>
 						(if incoming.private
 							ids[i] = Meteor.call 'createPrivateGroup', incoming.name, incoming.members
-						else 
+						else
 							ids[i] = Meteor.call 'createChannel', incoming.name, incoming.members) for incoming,i in @bodyParams.rooms
 					status: 'success', ids: ids   # need to handle error
 				catch e
@@ -261,12 +287,12 @@ Api.addRoute 'room/:id/archive', authRequired: true,
 				console.log '[restapi] archiveRoom -> '.red, "User does not have 'archive-room' permission"
 				statusCode: 403
 				body: status: 'error', message: 'You do not have permission to do this'
-				
+
 # unarchive a room by it's ID
 Api.addRoute 'room/:id/unarchive', authRequired: true,
 	post:
 		action: ->
-			# user must also have unarchive-room permission 
+			# user must also have unarchive-room permission
 			if RocketChat.authz.hasPermission(@userId, 'unarchive-room')
 				try
 					Meteor.runAsUser this.userId, () =>

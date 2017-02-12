@@ -55,6 +55,7 @@ jalik:ufs-gridfs@0.1.4
 jalik:ufs-local@0.2.8
 jparker:crypto-core@0.1.0
 jparker:crypto-md5@0.1.1
+jparker:crypto-sha1@0.1.0
 jparker:gravatar@0.5.1
 jquery@1.11.10
 kadira:blaze-layout@2.3.0

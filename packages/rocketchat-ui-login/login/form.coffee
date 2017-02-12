@@ -95,7 +95,7 @@ Template.loginForm.events
 			if instance.state.get() is 'Need_Verify'
 				Meteor.call 'certificate_code', window.uid, formData, window.account_email, window.account_pass, (error, result) ->
 					RocketChat.Button.reset(button)
-					#console.log (result)
+
 					if result.statusCode == 200
 						Meteor.call 'findUser', window.account_email, window.account_pass, (error, result) ->
 							RocketChat.Button.reset(button)
@@ -153,6 +153,7 @@ Template.loginForm.events
 							instance.state.set 'wait-activation'
 
 			if instance.state.get 'login'
+				formData.pass = CryptoJS.SHA1(formData.pass).toString()
 				Meteor.call 'acc_verify', formData, (error, result) ->
 					RocketChat.Button.reset(button)
 					#console.log (result)
@@ -183,19 +184,22 @@ Template.loginForm.events
 										toastr.error t 'User_not_found_or_incorrect_password'
 										return
 
+						else if data.msg == 'Visitor No Access'
+							toastr.error t 'Permission denied'
+
 					else if result.statusCode == 404
 						#console.log ("error")
 						toastr.error t 'User_not_found_or_incorrect_password'
-				loginMethod = 'loginWithPassword'
+				###loginMethod = 'loginWithPassword'
 
-				###Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
+				Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
 					RocketChat.Button.reset(button)
 					if error?
 						if error.error is 'no-valid-email'
 							instance.state.set 'email-verification'
 						else
 							toastr.error t 'User_not_found_or_incorrect_password'
-							return		###
+							return###
 
 
 	'click .register': ->

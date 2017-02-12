@@ -114,7 +114,7 @@ Template.adminUsers.events
 		t.limit.set t.limit.get() + 50
 
 	'click .send': (e, t) ->
-		
+
 		e.preventDefault()
 		subject = $(t.find('[name=subject]')).val()
 		body = $(t.find('[name=body]')).val()
@@ -123,7 +123,7 @@ Template.adminUsers.events
 		if not body
 			return
 		temp = RocketChat.models.Users.find().fetch()
-		console.log (temp)
+		#console.log (temp)
 		i=0
 		while i<temp.length
 			if not temp[i]
@@ -132,8 +132,8 @@ Template.adminUsers.events
 			if not temp[i].emails
 				i++
 				continue
-			console.log (temp[i])
-			Meteor.call 'sendSMTPEmail', "admin@hconsult.com", temp[i].emails[0].address, subject, body, (error, result) -> 
+			#console.log (temp[i])
+			Meteor.call 'sendSMTPEmail', "mefeu.mcn@gmail.com", temp[i].emails[0].address, subject, body, (error, result) ->
 				console.log ("OK")
 			i++
 		#11/24 nthu yuan

@@ -3,7 +3,11 @@
 		@mainContent = $('.main-content, .flex-tab-bar')
 		@list = $('.rooms-list')
 
-		Session.set("isMenuOpen", false)
+		if window.innerWidth <= 780 #if mobile menu open
+			menu.open()
+			Session.set("isMenuOpen", true)
+		else
+			Session.set("isMenuOpen", false)
 
 	isOpen: ->
 		return Session.get("isMenuOpen")
@@ -11,9 +15,9 @@
 	open: ->
 		Session.set("isMenuOpen", true)
 		if isRtl localStorage.getItem "userLanguage"
-			@mainContent?.css('transform', 'translateX(-260px)')
+			@mainContent?.css('transform', 'translateX(-120%)')
 		else
-			@mainContent?.css('transform', 'translateX(260px)')
+			@mainContent?.css('transform', 'translateX(120%)')
 
 	close: ->
 		Session.set("isMenuOpen", false)
