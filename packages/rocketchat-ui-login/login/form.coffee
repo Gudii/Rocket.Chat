@@ -102,7 +102,6 @@ Template.loginForm.events
 							if result.status
 								#console.log ("OK")
 								loginMethod = 'loginWithPassword'
-
 								Meteor[loginMethod] result.email, result.password, (error) ->
 									RocketChat.Button.reset(button)
 									if error?
@@ -152,7 +151,7 @@ Template.loginForm.events
 						else if error?.error is 'error-user-is-not-activated'
 							instance.state.set 'wait-activation'
 
-			if instance.state.get 'login'
+			if instance.state.get() is 'login'
 				formData.pass = CryptoJS.SHA1(formData.pass).toString()
 				Meteor.call 'acc_verify', formData, (error, result) ->
 					RocketChat.Button.reset(button)
@@ -160,6 +159,7 @@ Template.loginForm.events
 					if (result.statusCode == 200)
 						data = JSON.parse(result.data)
 						#console.log (data.msg)
+						localStorage.setItem('email',formData.emailOrUsername)
 						localStorage.setItem('password',formData.pass)
 						window.uid = data.uid
 						window.account_email = formData.emailOrUsername

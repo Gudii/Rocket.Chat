@@ -11,6 +11,12 @@ Template.privateGroupsFlex.helpers
 	error: ->
 		return Template.instance().error.get()
 
+	item: -> #NTHU
+		return Template.instance().item.get()
+
+	roles: -> #NTHU
+		return Template.instance().roles.get()
+
 	autocompleteSettings: ->
 		return {
 			limit: 10
@@ -26,10 +32,11 @@ Template.privateGroupsFlex.helpers
 					matchAll: true
 					filter:
 						exceptions: [Meteor.user().username].concat(Template.instance().selectedUsers.get())
+						roles: Template.instance().roles.get()
 					selector: (match) ->
-						return { term: match }
+						return { term: match}
 					sort: 'username'
-				}
+				},
 			]
 		}
 
@@ -38,6 +45,17 @@ Template.privateGroupsFlex.events
 		instance.selectedUsers.set instance.selectedUsers.get().concat doc.username
 
 		instance.selectedUserNames[doc.username] = doc.name
+
+		event.currentTarget.value = ''
+		event.currentTarget.focus()
+
+	'change #pvt-group-roles': (event, instance) -> #NTHU
+		test = []
+		test = event.currentTarget.value
+		test = _.difference Template.instance().item.get(), test
+
+		Template.instance().item.set(test)
+		instance.roles.set instance.roles.get().concat event.currentTarget.value
 
 		event.currentTarget.value = ''
 		event.currentTarget.focus()
@@ -51,6 +69,15 @@ Template.privateGroupsFlex.events
 		Template.instance().selectedUsers.set(users)
 
 		$('#pvt-group-members').focus()
+
+	'click .remove-roles': (e, instance) -> #NTHU
+		self = @
+		instance.item.set instance.item.get().concat self.valueOf()
+		role = Template.instance().roles.get()
+		role = _.reject Template.instance().roles.get(), (_id) ->
+			return _id is self.valueOf()
+
+		Template.instance().roles.set(role)
 
 	'click .cancel-pvt-group': (e, instance) ->
 		SideNav.closeFlex ->
@@ -83,7 +110,7 @@ Template.privateGroupsFlex.events
 		readOnly = instance.find('#channel-ro').checked
 		instance.groupName.set name
 		if not err
-			Meteor.call 'createPrivateGroup', name, instance.selectedUsers.get(), readOnly, (err, result) ->
+			Meteor.call 'createPrivateGroup', name, instance.selectedUsers.get(), readOnly, instance.roles.get(), (err, result) ->
 				if err
 					if err.error is 'error-invalid-name'
 						instance.error.set({ invalid: true })
@@ -101,12 +128,25 @@ Template.privateGroupsFlex.events
 		else
 			Template.instance().error.set({fields: err})
 
+		item = []
+		for i in RocketChat.models.Roles.find().fetch()
+			item = item.concat i._id
+			Template.instance().item.set item
+
 Template.privateGroupsFlex.onCreated ->
 	instance = this
 	instance.selectedUsers = new ReactiveVar []
 	instance.selectedUserNames = {}
 	instance.error = new ReactiveVar []
 	instance.groupName = new ReactiveVar ''
+	instance.roles = new ReactiveVar [] #NTHU
+	instance.item = new ReactiveVar [] #NTHU
+	item = []
+	roles = RocketChat.models.Roles.find().fetch()
+	for i in roles
+		item = item.concat i._id
+		Template.instance().item.set item
+
 
 	instance.clearForm = ->
 		instance.error.set([])
@@ -114,3 +154,4 @@ Template.privateGroupsFlex.onCreated ->
 		instance.selectedUsers.set([])
 		instance.find('#pvt-group-name').value = ''
 		instance.find('#pvt-group-members').value = ''
+		instance.roles.set([]) #NTHU

@@ -16,6 +16,16 @@
 				<input type="checkbox" id="channel-ro">
 			</div>
 			<div class="input-line">
+				<label for="pvt-group-roles">{{_ "Select_roles"}}</label> <!-- NTHU -->
+				<select id="pvt-group-roles">
+    			<option selected="selected">Select roles</option>
+    			{{#each item}}
+        		<option value="{{this}}">{{this}}</option>
+    			{{/each}}
+				</select>
+				{{#each roles}}
+					<li>{{.}} <i class="icon-cancel remove-roles"></i></li>
+				{{/each}}<!-- NTHU -->
 				<label for="pvt-group-members">{{_ "Select_users" }}</label>
 				{{> inputAutocomplete settings=autocompleteSettings id="pvt-group-members" class="search" placeholder=(_ "Search_by_username") autocomplete="off"}}
 				<ul class="selected-users">
@@ -23,6 +33,13 @@
 						<li>{{.}} <i class="icon-cancel remove-room-member"></i></li>
 					{{/each}}
 				</ul>
+				<!--<label for="pvt-group-members">{{_ "Select_permission" }}</label>
+				{{> inputAutocomplete settings=autocompletePermission id="pvt-group-permission" class="search" placeholder=(_ "Search_by_permission") autocomplete="off"}}
+				<ul class="selected-users">
+					{{#each permission}}
+						<li>{{.}} <i class="icon-cancel remove-permission"></i></li>
+					{{/each}}
+				</ul>-->
 			</div>
 			{{#if error.fields}}
 				<div class="input-error">

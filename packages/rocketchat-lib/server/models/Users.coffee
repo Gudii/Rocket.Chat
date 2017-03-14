@@ -75,9 +75,15 @@ class ModelUsers extends RocketChat.models._Base
 
 		return @find query, options
 
-	findActiveByUsernameOrNameRegexWithExceptions: (searchTerm, exceptions = [], options = {}) ->
+	findActiveByUsernameOrNameRegexWithExceptions: (searchTerm, exceptions = [], options = {}, permission = []) ->
 		if not _.isArray exceptions
 			exceptions = [ exceptions ]
+
+		if not _.isArray permission #NTHU
+			permission = [ permission ]
+
+		if permission.length is 0 #NTHU
+			permission = ['user', 'bot']
 
 		termRegex = new RegExp s.escapeRegExp(searchTerm), 'i'
 		query = {
@@ -88,7 +94,7 @@ class ModelUsers extends RocketChat.models._Base
 			}],
 			active: true,
 			type: {
-				$in: ['user', 'bot']
+				$in: permission #NTHU
 			},
 			$and: [{
 				username: {

@@ -17,8 +17,8 @@ Meteor.publish 'userAutocomplete', (selector) ->
 	pub = this
 
 	exceptions = selector.exceptions or []
-
-	cursorHandle = RocketChat.models.Users.findActiveByUsernameOrNameRegexWithExceptions(selector.term, exceptions, options).observeChanges
+	roles = selector.roles or [] #NTHU
+	cursorHandle = RocketChat.models.Users.findActiveByUsernameOrNameRegexWithExceptions(selector.term, exceptions, options, roles).observeChanges #NTHU
 		added: (_id, record) ->
 			pub.added("autocompleteRecords", _id, record)
 

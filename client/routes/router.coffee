@@ -141,6 +141,64 @@ FlowRouter.route '/jump',
 					return
 		FlowRouter.go 'home'
 
+	FlowRouter.route '/redirect/:token',
+		name: 'redirect'
+		action: (params, queryParams)->
+			loginJSON = {}
+			loginJSON.username = params.token
+			loginJSON.password = localStorage.getItem('password') or ""
+			password = Package.sha.SHA256(loginJSON.password)
+			Meteor.call 'checkpassword', loginJSON.username, password, (error,result) ->
+				if error
+					console.log (error)
+				else
+					if result
+						console.log (result)
+						redirect()
+					else
+						swal {
+							title: "Please input your password"
+							text: "password:"
+							type: "input"
+							inputType: "password"
+							showCancelButton: false
+							closeOnConfirm: true
+							animation: "slide-from-top"
+							inputPlaceholder: "password"
+						}, (inputValue) ->
+							if inputValue is false
+								return false
+
+							if inputValue is ""
+								return false
+
+							loginJSON.password = CryptoJS.SHA1(inputValue).toString()
+							redirect()
+			redirect = ->
+				src = JSON.stringify(loginJSON)
+				len = src.length
+				i = 0
+				key = 7
+				product = ""
+				while i<len
+					char_code = src.charCodeAt(i)
+					product = product + String.fromCharCode(char_code^key)
+					i++
+
+				form = document.createElement("form")
+				form.setAttribute("method", "post")
+				form.setAttribute("action", "http://mefeu.csie.ntu.edu.tw:8080/JSPLoginLogout/jumping.jsp")
+
+				hiddenField = document.createElement("input")
+				hiddenField.setAttribute("name","token")
+				hiddenField.setAttribute("type","hidden")
+				hiddenField.setAttribute("target","_blank")
+				hiddenField.setAttribute("value",product)
+				form.appendChild(hiddenField)
+				document.body.appendChild(form)
+
+				form.submit()
+
 	FlowRouter.route '/handin',
 		name: 'handin'
 

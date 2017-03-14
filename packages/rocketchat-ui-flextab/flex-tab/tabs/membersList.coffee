@@ -17,6 +17,7 @@ Template.membersList.helpers
 	roomUsers: ->
 		onlineUsers = RoomManager.onlineUsers.get()
 		room = ChatRoom.findOne(this.rid)
+		Template.instance().roomid.set this.rid #NTHU
 		roomUsernames = room?.usernames or []
 		roomOnlineUsernames = roomUsernames.filter((username) -> onlineUsers[username])
 		roomMuted = room?.muted or []
@@ -75,13 +76,14 @@ Template.membersList.helpers
 			rules: [
 				{
 					collection: 'UserAndRoom'
-					subscription: 'userAutocomplete'
+					subscription: 'adduserAutocomplete'
 					field: 'username'
 					template: Template.userSearch
 					noMatchTemplate: Template.userSearchEmpty
 					matchAll: true
 					filter:
 						exceptions: [Meteor.user().username]
+						rid: Template.instance().roomid.get()
 					selector: (match) ->
 						return { term: match }
 					sort: 'username'
@@ -132,6 +134,7 @@ Template.membersList.onCreated ->
 	@usersLimit = new ReactiveVar 100
 	@userDetail = new ReactiveVar
 	@showDetail = new ReactiveVar false
+	@roomid = new ReactiveVar
 
 	@clearUserDetail = =>
 		@showDetail.set(false)

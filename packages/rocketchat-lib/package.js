@@ -101,6 +101,7 @@ Package.onUse(function(api) {
 	api.addFiles('server/models/Subscriptions.coffee', 'server');
 	api.addFiles('server/models/Uploads.coffee', 'server');
 	api.addFiles('server/models/Users.coffee', 'server');
+	api.addFiles('server/models/Keys.coffee', 'server');
 
 	api.addFiles('server/startup/statsTracker.js', 'server');
 
