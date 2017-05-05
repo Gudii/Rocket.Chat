@@ -18,7 +18,7 @@ Api.addRoute 'publicRooms', authRequired: true,
 		rooms = RocketChat.models.Rooms.findByType('c', { sort: { msgs:-1 } }).fetch()
 		status: 'success', rooms: rooms
 
-Api.addRoute 'changepassword', authRequired: false, #NTHU
+###Api.addRoute 'changepassword', authRequired: false, #NTHU
 	post:
 		action: ->
 			unless this.bodyParams.username
@@ -42,7 +42,7 @@ Api.addRoute 'changepassword', authRequired: false, #NTHU
 					return 'Invalid password'
 			new_password = _.trim this.bodyParams.new_password
 			Accounts.setPassword user._id, new_password, { logout: false }
-			return 'success'
+			return 'success'###
 
 ###
 @api {get} /joinedRooms Get joined rooms.

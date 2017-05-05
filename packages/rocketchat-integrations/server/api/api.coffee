@@ -1,6 +1,35 @@
 vm = Npm.require('vm')
+moment = require('moment')
 
 compiledScripts = {}
+
+buildSandbox = (store = {}) ->
+	sandbox =
+		_: _
+		s: s
+		console: console,
+		moment: moment,
+		Store:
+			set: (key, val) ->
+				return store[key] = val
+			get: (key) ->
+				return store[key]
+		HTTP: (method, url, options) ->
+			try
+				return {} =
+					result: HTTP.call method, url, options
+			catch e
+				return {} =
+					error: e
+
+	Object.keys(RocketChat.models).filter((k) ->
+		return !k.startsWith('_')
+	).forEach (k) =>
+		sandbox[k] = RocketChat.models[k]
+
+	return {} =
+		store: store,
+		sandbox: sandbox
 
 getIntegrationScript = (integration) ->
 	compiledScript = compiledScripts[integration._id]
@@ -9,15 +38,7 @@ getIntegrationScript = (integration) ->
 
 	script = integration.scriptCompiled
 	vmScript = undefined
-	sandbox =
-		_: _
-		s: s
-		console: console
-		Store:
-			set: (key, val) ->
-				return store[key] = val
-			get: (key) ->
-				return store[key]
+	sandboxItems = buildSandbox()
 
 	try
 		logger.incoming.info 'Will evaluate script of Trigger', integration.name
@@ -25,11 +46,12 @@ getIntegrationScript = (integration) ->
 
 		vmScript = vm.createScript script, 'script.js'
 
-		vmScript.runInNewContext sandbox
+		vmScript.runInNewContext sandboxItems.sandbox
 
-		if sandbox.Script?
+		if sandboxItems.sandbox.Script?
 			compiledScripts[integration._id] =
-				script: new sandbox.Script()
+				script: new sandboxItems.sandbox.Script()
+				store: sandboxItems.store
 				_updatedAt: integration._updatedAt
 
 			return compiledScripts[integration._id].script
@@ -40,7 +62,7 @@ getIntegrationScript = (integration) ->
 		logger.incoming.error e.stack.replace(/^/gm, '  ')
 		throw RocketChat.API.v1.failure 'error-evaluating-script'
 
-	if not sandbox.Script?
+	if not sandboxItems.sandbox.Script?
 		logger.incoming.error '[Class "Script" not in Trigger', integration.name, ']'
 		throw RocketChat.API.v1.failure 'class-script-not-found'
 
@@ -50,8 +72,22 @@ Api = new Restivus
 	apiPath: 'hooks/'
 	auth:
 		user: ->
-			if @bodyParams?.payload?
-				@bodyParams = JSON.parse @bodyParams.payload
+			payloadKeys = Object.keys @bodyParams
+			payloadIsWrapped = @bodyParams?.payload? and payloadKeys.length == 1
+
+			if payloadIsWrapped and @request.headers['content-type'] is 'application/x-www-form-urlencoded'
+				try
+					@bodyParams = JSON.parse @bodyParams.payload
+				catch e
+					return {
+						error: {
+							statusCode: 400
+							body: {
+								success: false
+								error: e.message
+							}
+						}
+					}
 
 			@integration = RocketChat.models.Integrations.findOne
 				_id: @request.params.integrationId
@@ -68,7 +104,7 @@ Api = new Restivus
 
 
 createIntegration = (options, user) ->
-	logger.incoming.info 'Add integration'
+	logger.incoming.info 'Add integration', options.name
 	logger.incoming.debug options
 
 	Meteor.runAsUser user._id, =>
@@ -112,9 +148,9 @@ removeIntegration = (options, user) ->
 
 
 executeIntegrationRest = ->
-	logger.incoming.info 'Post integration'
-	logger.incoming.debug '@urlParams', @urlParams
-	logger.incoming.debug '@bodyParams', @bodyParams
+	logger.incoming.info 'Post integration:', @integration.name
+	logger.incoming.debug '@urlParams:', @urlParams
+	logger.incoming.debug '@bodyParams:', @bodyParams
 
 	if @integration.enabled isnt true
 		return {} =
@@ -127,13 +163,13 @@ executeIntegrationRest = ->
 		avatar: @integration.avatar
 		emoji: @integration.emoji
 
-
 	if @integration.scriptEnabled is true and @integration.scriptCompiled? and @integration.scriptCompiled.trim() isnt ''
 		script = undefined
 		try
 			script = getIntegrationScript(@integration)
 		catch e
-			return e
+			logger.incoming.warn e
+			return RocketChat.API.v1.failure e.message
 
 		request =
 			url:
@@ -153,7 +189,12 @@ executeIntegrationRest = ->
 				username: @user.username
 
 		try
-			result = script.process_incoming_request({ request: request })
+			sandboxItems = buildSandbox(compiledScripts[@integration._id].store)
+			sandbox = sandboxItems.sandbox
+			sandbox.script = script
+			sandbox.request = request
+
+			result = vm.runInNewContext('script.process_incoming_request({ request: request })', sandbox, { timeout: 3000 })
 
 			if result?.error?
 				return RocketChat.API.v1.failure result.error
@@ -236,17 +277,6 @@ integrationInfoRest = ->
 		statusCode: 200
 		body:
 			success: true
-
-
-RocketChat.API.v1.addRoute 'integrations.create', authRequired: true,
-	post: ->
-		return createIntegration @bodyParams, @user
-
-
-RocketChat.API.v1.addRoute 'integrations.remove', authRequired: true,
-	post: ->
-		return removeIntegration @bodyParams, @user
-
 
 Api.addRoute ':integrationId/:userId/:token', authRequired: true, {post: executeIntegrationRest, get: executeIntegrationRest}
 Api.addRoute ':integrationId/:token', authRequired: true, {post: executeIntegrationRest, get: executeIntegrationRest}

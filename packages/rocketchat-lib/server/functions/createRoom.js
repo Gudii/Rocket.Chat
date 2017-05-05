@@ -61,7 +61,7 @@ RocketChat.createRoom = function(type, name, owner, members, readOnly, extraData
 		roles: extraData.customFields
 	});
 
-	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner.username, members, extraData);
+	room = RocketChat.models.Rooms.createWithTypeNameUserAndUsernames(type, name, owner, members, extraData);
 
 	for (const username of members) {
 		const member = RocketChat.models.Users.findOneByUsername(username, { fields: { username: 1 }});

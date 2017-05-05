@@ -11,13 +11,14 @@ Package.onUse(function(api) {
 		'ecmascript',
 		'coffeescript',
 		'underscore',
-		'rocketchat:lib'
+		'rocketchat:lib',
+		'less'
 	]);
 
 	api.addFiles('client/messageAttachment.html', 'client');
 	api.addFiles('client/messageAttachment.coffee', 'client');
+	api.addFiles('client/watermark.js', 'client');
 
 	// stylesheets
-	api.addAssets('client/stylesheets/messageAttachments.less', 'server');
-	api.addFiles('client/stylesheets/loader.coffee', 'server');
+	api.addFiles('client/stylesheets/messageAttachments.less', 'client');
 });

@@ -20,8 +20,8 @@ class BotHelpers {
 		fieldsSetting.forEach((n) => {
 			this.userFields[n.trim()] = 1;
 		});
-		this._allUsers = Meteor.users.find(this.queries.users, { fields: this.userFields });
-		this._onlineUsers = Meteor.users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
+		this._allUsers = RocketChat.models.Users.find(this.queries.users, { fields: this.userFields });
+		this._onlineUsers = RocketChat.models.Users.find({ $and: [this.queries.users, this.queries.online] }, { fields: this.userFields });
 	}
 
 	// request methods or props as arguments to Meteor.call
@@ -44,25 +44,25 @@ class BotHelpers {
 	}
 
 	addUserToRoom(userName, room) {
-		let foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
+		const foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
 
 		if (!_.isObject(foundRoom)) {
 			throw new Meteor.Error('invalid-channel');
 		}
 
-		let data = {};
+		const data = {};
 		data.rid = foundRoom._id;
 		data.username = userName;
 		Meteor.call('addUserToRoom', data);
 	}
 
 	removeUserFromRoom(userName, room) {
-		let foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
+		const foundRoom = RocketChat.models.Rooms.findOneByIdOrName(room);
 
 		if (!_.isObject(foundRoom)) {
 			throw new Meteor.Error('invalid-channel');
 		}
-		let data = {};
+		const data = {};
 		data.rid = foundRoom._id;
 		data.username = userName;
 		Meteor.call('removeUserFromRoom', data);
@@ -76,7 +76,7 @@ class BotHelpers {
 	// "public" properties accessed by getters
 	// allUsers / onlineUsers return whichever properties are enabled by settings
 	get allUsers() {
-		if (!this.userFields.length) {
+		if (!Object.keys(this.userFields).length) {
 			this.requestError();
 			return false;
 		} else {
@@ -84,7 +84,7 @@ class BotHelpers {
 		}
 	}
 	get onlineUsers() {
-		if (!this.userFields.length) {
+		if (!Object.keys(this.userFields).length) {
 			this.requestError();
 			return false;
 		} else {
@@ -155,7 +155,7 @@ RocketChat.settings.get('BotHelpers_userFields', function(settingKey, settingVal
 
 Meteor.methods({
 	botRequest: (...args) => {
-		let userID = Meteor.userId();
+		const userID = Meteor.userId();
 		if (userID && RocketChat.authz.hasRole(userID, 'bot')) {
 			return botHelpers.request(...args);
 		} else {

@@ -23,24 +23,23 @@ Template.register.helpers({
 
 Template.register.events({
 	'submit #livechat-registration'(e, instance) {
-		var $email, $name;
 		e.preventDefault();
 
-		let start = () => {
+		const start = () => {
 			instance.hideError();
 			if (instance.request === 'video') {
 				LivechatVideoCall.request();
 			}
 		};
 
-		$name = instance.$('input[name=name]');
-		$email = instance.$('input[name=email]');
+		const $name = instance.$('input[name=name]');
+		const $email = instance.$('input[name=email]');
 		if (!($name.val().trim() && $email.val().trim())) {
 			return instance.showError(TAPi18n.__('Please_fill_name_and_email'));
 		} else {
 			var departmentId = instance.$('select[name=department]').val();
 			if (!departmentId) {
-				var department = Department.findOne();
+				var department = Department.findOne({ showOnRegistration: true });
 				if (department) {
 					departmentId = department._id;
 				}
@@ -56,6 +55,7 @@ Template.register.events({
 				if (error != null) {
 					return instance.showError(error.reason);
 				}
+				parentCall('callback', ['pre-chat-form-submit', _.omit(guest, 'token')]);
 				Meteor.loginWithToken(result.token, function(error) {
 					if (error) {
 						return instance.showError(error.reason);
