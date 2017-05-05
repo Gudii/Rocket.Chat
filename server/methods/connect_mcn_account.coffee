@@ -5,7 +5,7 @@ Meteor.methods
     Meteor.http.call("POST", "http://140.112.124.238/api/acc_verify",
       {data: {username: formData.emailOrUsername, password: formData.pass}},
       (error, result) ->
-        
+
           future.return(result)
     )
 

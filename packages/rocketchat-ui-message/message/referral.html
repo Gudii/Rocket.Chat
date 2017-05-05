@@ -1,0 +1,64 @@
+<Template name="referral">
+  <section class="page-container page-list">
+    <header class="fixed-title">
+      <h2>
+        <span class="room-title">Referral System</span>
+      </h2>
+    </header>
+    <div class="content">
+      <form class="message-form" method="post" action="/">
+        <div class="rocket-form">
+          <fieldset>
+            <div class="input-line">
+              <label>病情摘要</label>
+              <div>
+                <input type="text" id="form1">
+              </div>
+            </div>
+            <div class="input-line">
+              <label>診斷</label>
+              <div>
+                <input type="text" id="form2">
+              </div>
+            </div>
+            <div class="input-line">
+              <label>檢查及治療摘要</label>
+              <div>
+                <input type="text" id="form3">
+              </div>
+            </div>
+            <div class="input-line">
+              <label>原診療醫院診所</label>
+              <div>
+                <input type="text" id="form4">
+              </div>
+            </div>
+            <div class="input-line">
+              <label>原診治醫師</label>
+              <div>
+                <input type="text" id="form5">
+              </div>
+            </div>
+            <div class="input-line">
+              <label>轉診目的</label>
+              <div>
+                <select name="disease" id="form6">
+          　				<option value="form6-1">急診治療</option>
+          			　	<option value="form6-2">住院治療</option>
+          			　	<option value="form6-3">門診治療</option>
+          			　	<option value="form6-4">進一步檢查</option>
+          				 <option value="form6-5">轉回轉出或適當之院所繼續追蹤</option>
+                   <option value="form6-6">其他</option>
+          			</select>
+              </div>
+            </div>
+
+            <div class="submit">
+              <button class="button send" type="button" id="submit">submit</button>
+            </div>
+          </fieldset>
+        </div>
+      </form>
+    </div>
+  </section>
+</Template>

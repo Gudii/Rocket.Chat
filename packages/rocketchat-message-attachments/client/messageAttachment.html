@@ -33,6 +33,8 @@
 						<a href="{{fixCordova title_link}}" target="_blank">{{title}}</a>
 						{{#if title_link_download}}
 							<a class="icon-download attachment-download-icon" href="{{fixCordova title_link}}" target="_blank" download=""></a>
+							<!-- <a  src="/images/logo/fileupload.png" onclick="gotoUpload()"></a> -->
+							<button id="handinredirect" onclick="handin_this()"><img src="/images/logo/fileupload.png"></button>
 						{{/if}}
 					{{else}}
 						{{title}}
@@ -64,7 +66,7 @@
 					{{#if loadImage}}
 						<a href="{{fixCordova image_url}}" class="swipebox" target="_blank">
 							<div class="inline-image" style="background-image: url('{{fixCordova image_url}}');">
-								<img src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}">
+								<img id="theimg" src="{{fixCordova image_url}}" height="{{getImageHeight image_dimensions.height}}">
 							</div>
 						</a>
 					{{else}}

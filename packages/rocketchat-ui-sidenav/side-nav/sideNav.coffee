@@ -23,20 +23,23 @@ Template.sideNav.helpers
 	templateName: ->
 		return @template
 
-	window.opentab = (evt, divname) ->
-		tabcontent = document.getElementsByClassName('tabcontent')
-		i = 0
-		while i < tabcontent.length
-			tabcontent[i].style.display = 'none'
-			i++
-		document.getElementById(divname).style.display = 'block'
-		tabbutton = document.getElementsByClassName('tabbutton')
-		i = 0
-		while i < tabbutton.length
-			tabbutton[i].style.backgroundColor = "rgba(100, 100, 100, 0.0)"
-			i++
-		evt.currentTarget.style.backgroundColor = "rgba(100, 100, 100, 0.4)"
-		return
+	# window.opentab = (evt, divname) ->
+	# 	tabcontent = document.getElementsByClassName('tabcontent')
+	# 	i = 0
+	# 	while i < tabcontent.length
+	# 		tabcontent[i].style.display = 'none'
+	# 		i++
+	# 	document.getElementById(divname).style.display = 'block'
+	# 	tabbutton = document.getElementsByClassName('tabbutton')
+	# 	i = 0
+	# 	while i < tabbutton.length
+	# 		tabbutton[i].style.backgroundColor = "rgba(100, 100, 100, 0.0)"
+	# 		i++
+	# 	evt.currentTarget.style.backgroundColor = "rgba(100, 100, 100, 0.4)"
+	# 	return
+
+	window.gotoUpload = ->
+		FlowRouter.go 'handin'
 
 Template.sideNav.events
 	'click .close-flex': ->
@@ -54,10 +57,42 @@ Template.sideNav.events
 	'scroll .rooms-list': ->
 		menu.updateUnreadBars()
 
+	'click .tabbutton': (e) ->
+		tabcontent = document.getElementsByClassName('tabcontent')
+		i = 0
+		while i < tabcontent.length
+			tabcontent[i].style.display = 'none'
+			i++
+		divname = e.currentTarget.id.split("_")[1]
+		document.getElementById(divname).style.display = 'block'
+		tabbutton = document.getElementsByClassName('tabbutton')
+		i = 0
+		while i < tabbutton.length
+			tabbutton[i].style.backgroundColor = "rgba(100, 100, 100, 0.0)"
+			i++
+		e.currentTarget.style.backgroundColor = "rgba(100, 100, 100, 0.4)"
 
 	'click #b_href': ->
-		url = Meteor.absoluteUrl() + 'redirect/' + Meteor.user().emails[0].address
-		window.open(url,'_blank','location=no')
+		temp = Meteor.users.find().fetch()
+		console.log (temp)
+		#win = window.open('https://mefeu.csie.ntu.edu.tw:8443/JSPLoginLogout/login.jsp', '_blank')
+		#win.focus()
+		loginJSON = {}
+		#console.log (Session.get("password"))
+		loginJSON.username = Meteor.user().emails[0].address
+		loginJSON.password = localStorage.getItem('password')
+		src = JSON.stringify(loginJSON)
+
+		len = src.length
+		i = 0
+		key = 7
+		product = ""
+		while i<len
+			char_code = src.charCodeAt(i)
+			product = product + String.fromCharCode(char_code^key)
+			i++
+		$("#jumpingData").val(product)
+		$("#jumpingForm").submit()
 
 	'dropped .side-nav': (e) ->
 		e.preventDefault()
@@ -66,6 +101,6 @@ Template.sideNav.events
 Template.sideNav.onRendered ->
 	SideNav.init()
 	menu.init()
-	document.getElementById('default').click();
+	document.getElementById('tab_channels').click();
 	Meteor.defer ->
 	menu.updateUnreadBars()

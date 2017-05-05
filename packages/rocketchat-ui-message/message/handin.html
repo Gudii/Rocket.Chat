@@ -1,0 +1,50 @@
+<Template name="handin">
+  <section class="page-container page-list">
+    <header class="fixed-title">
+      <h2>
+        <span class="room-title">File Upload</span>
+      </h2>
+    </header>
+    <div class="content">
+      <form class="message-form" method="post" action="/">
+        <div class="rocket-form">
+          <fieldset>
+            <div class="input-line">
+              <label>分類</label>
+              <div>
+                <select name="disease" id="disease">
+          　				<option value="Trauma-FAST">創傷超音波 Trauma-FAST</option>
+          			　	<option value="kidney">腎臟 kidney</option>
+          			　	<option value="Abdominal Aorta">腹部主動脈 Abdominal Aorta</option>
+          			　	<option value="Gallbladde">膽囊 Gallbladder</option>
+          				<option value="Others">其他 Others</option>
+          			</select>
+              </div>
+            </div>
+
+            <div class="input-line">
+              <label>檔案</label>
+              <div class="message-input">
+        				<div class="message-buttons file">
+        					<i class="icon-attach file"></i>
+        					<input type="file" id="files" accept="{{fileUploadAllowedMediaTypes}}">
+        				</div>
+        			</div>
+            </div>
+
+            <div class="input-line">
+              <label>備註</label>
+              <div>
+                <input type="text" id="comment">
+              </div>
+            </div>
+
+            <div class="submit">
+              <button class="button send" type="button" id="submit">submit</button>
+            </div>
+          </fieldset>
+        </div>
+      </form>
+    </div>
+  </section>
+</Template>

@@ -174,7 +174,7 @@ Template.loginForm.events
 							#RocketChat.Button.reset(button)
 
 							loginMethod = 'loginWithPassword'
-
+							Meteor.call 'registerUser_mcn', formData.emailOrUsername, formData.pass, (error, result) ->
 							Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
 								RocketChat.Button.reset(button)
 								if error?

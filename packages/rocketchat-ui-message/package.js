@@ -31,6 +31,8 @@ Package.onUse(function(api) {
 	api.addFiles('message/popup/messagePopupEmoji.html', 'client');
 	api.addFiles('message/popup/messagePopupSlashCommand.html', 'client');
 	api.addFiles('message/popup/messagePopupUser.html', 'client');
+	api.addFiles('message/handin.html', 'client');
+	api.addFiles('message/referral.html', 'client');
 
 	api.addFiles('message/message.coffee', 'client');
 	api.addFiles('message/messageBox.coffee', 'client');
@@ -38,6 +40,8 @@ Package.onUse(function(api) {
 	api.addFiles('message/popup/messagePopupChannel.js', 'client');
 	api.addFiles('message/popup/messagePopupConfig.coffee', 'client');
 	api.addFiles('message/popup/messagePopupEmoji.coffee', 'client');
+	api.addFiles('message/handin.coffee', 'client');
+	api.addFiles('message/referral.coffee', 'client');
 
 	api.addFiles('message/renderMessageBody.js', 'client');
 

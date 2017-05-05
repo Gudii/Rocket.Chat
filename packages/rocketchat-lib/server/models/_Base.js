@@ -10,6 +10,14 @@ try {
 	console.log(e);
 }
 
+const HandInRecord = new Mongo.Collection(baseName + '_HandIn');
+try {
+	HandInRecord._ensureIndex({ collection: 1 });
+	HandInRecord._ensureIndex({ _deletedAt: 1 }, { expireAfterSeconds: 60 * 60 * 24 * 30 });
+} catch (e) {
+	console.log(e);
+}
+
 class ModelsBase extends EventEmitter {
 	constructor(model) {
 		super();

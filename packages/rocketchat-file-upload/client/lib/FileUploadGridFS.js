@@ -21,8 +21,17 @@ FileUpload.GridFS = class FileUploadGridFS extends FileUploadBase {
 			},
 			onComplete: (fileData) => {
 				var file = _.pick(fileData, '_id', 'type', 'size', 'name', 'identify');
-
 				file.url = fileData.url.replace(Meteor.absoluteUrl(), '/');
+				if(fileData.rid=="FORFILEUPLOAD"){
+					mcnFileData = {
+						username : Meteor.user().name,
+						type : document.getElementById('disease').value,
+						comment : document.getElementById('comment').value,
+						img : Meteor.absoluteUrl() + "file-upload/" + file._id + "/" + file.name
+					}
+					console.log(mcnFileData);
+					Meteor.call('file_handin', mcnFileData, function(err, result) {});
+				}
 
 				Meteor.call('sendFileMessage', this.meta.rid, null, file, () => {
 					Meteor.setTimeout(() => {

@@ -49,3 +49,52 @@ Template.messageAttachment.helpers
 	injectIndex: (data, previousIndex, index) ->
 		data.index = previousIndex + '.attachments.' + index
 		return
+
+	window.handin_this = ->
+		img=document.getElementById("theimg").src
+		text =
+			'<div class="upload-preview">
+				<fieldset>
+					<div class="input-line">
+						<label>分類</label>
+						<div>
+							<select name="disease" id="disease">
+				　				<option value="創傷超音波 Trauma-FAST">創傷超音波 Trauma-FAST</option>
+							　	<option value="腎臟 kidney">腎臟 kidney</option>
+							　	<option value="腹部主動脈 Abdominal Aorta">腹部主動脈 Abdominal Aorta</option>
+							　	<option value="膽囊 Gallbladde">膽囊 Gallbladder</option>
+								<option value="其他 Others">其他 Others</option>
+							</select>
+						</div>
+					</div>
+
+					<div class="input-line">
+						<label>備註</label>
+						<div>
+							<input type="text" id="comment">
+						</div>
+					</div>
+				</fieldset>
+				<img src="' + img + '" height=200>
+			</div>'
+		swal
+			title : "Handin!"
+			text : text
+			showCancelButton: true
+			closeOnConfirm: false
+			closeOnCancel: false
+			html : true
+		, (isConfirm) ->
+			if isConfirm isnt true
+				swal.close()
+			mcnFileData =
+				username : Meteor.user().name
+				type : document.getElementById('disease').value
+				comment : document.getElementById('comment').value
+				img : img
+			console.log (mcnFileData)
+			Meteor.call 'file_handin', mcnFileData, (error, result) ->
+			swal
+				title: "Success"
+				type: "success"
+				timer: 3000

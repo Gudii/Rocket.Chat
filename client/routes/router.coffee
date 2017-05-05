@@ -205,6 +205,13 @@ FlowRouter.route '/jump',
 		action: ->
 
 			BlazeLayout.render 'main', {center: 'handin'}
+
+	FlowRouter.route '/referral',
+		name: 'referral'
+
+		action: ->
+
+			BlazeLayout.render 'main', {center: 'referral'}
 		# if RocketChat.settings.get('Accounts_RegistrationForm') is 'Secret URL'
 		# 	Meteor.call 'checkRegistrationSecretURL', params.hash, (err, success) ->
 		# 		if success
