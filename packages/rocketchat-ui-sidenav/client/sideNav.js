@@ -52,6 +52,7 @@ Template.sideNav.helpers({
 		}
 	},
 
+
 	/*opentab(evt, divname) {
 		var tabcontent, i, tabbutton;
 		tabcontent = document.getElementsByClassName('tabcontent');
@@ -110,6 +111,7 @@ Template.sideNav.events({
 			i++;
 		}
 		divname = e.currentTarget.id.split("_")[1];
+		console.log(divname);
 		document.getElementById(divname).style.display = 'block';
 		tabbutton = document.getElementsByClassName('tabbutton');
 		i = 0;
@@ -118,7 +120,12 @@ Template.sideNav.events({
 			i++;
 		}
 		e.currentTarget.style.backgroundColor = "rgba(100, 100, 100, 0.4)";
+	},
+
+	'click #gotoUpload' () {
+		FlowRouter.go('handin');
 	}
+
 });
 
 Template.sideNav.onRendered(function() {
