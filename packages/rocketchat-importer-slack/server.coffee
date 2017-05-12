@@ -1,6 +1,6 @@
 Importer.Slack = class Importer.Slack extends Importer.Base
-	constructor: (name, descriptionI18N, fileTypeRegex) ->
-		super(name, descriptionI18N, fileTypeRegex)
+	constructor: (name, descriptionI18N, mimeType) ->
+		super(name, descriptionI18N, mimeType)
 		@userTags = []
 		@bots = {}
 		@logger.debug('Constructed a new Slack Importer.')
@@ -126,10 +126,9 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 							if user.profile.email
 								userId = Accounts.createUser { email: user.profile.email, password: Date.now() + user.name + user.profile.email.toUpperCase() }
 							else
-								userId = Accounts.createUser { username: user.name, password: Date.now() + user.name }
+								userId = Accounts.createUser { username: user.name, password: Date.now() + user.name, joinDefaultChannelsSilenced: true }
 							Meteor.runAsUser userId, () =>
-								Meteor.call 'setUsername', user.name
-								Meteor.call 'joinDefaultChannels', true
+								Meteor.call 'setUsername', user.name, {joinDefaultChannelsSilenced: true}
 								url = null
 								if user.profile.image_original
 									url = user.profile.image_original
@@ -230,7 +229,7 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 													msg: "_#{@convertSlackMessageToRocketChat(message.text)}_"
 												_.extend msgObj, msgDataDefaults
 												RocketChat.sendMessage @getRocketUser(message.user), msgObj, room, true
-											else if message.subtype is 'bot_message'
+											else if message.subtype is 'bot_message' or message.subtype is 'slackbot_response'
 												botUser = RocketChat.models.Users.findOneById 'rocket.cat', { fields: { username: 1 }}
 												botUsername = if @bots[message.bot_id] then @bots[message.bot_id]?.name else message.username
 												msgObj =
@@ -321,7 +320,10 @@ Importer.Slack = class Importer.Slack extends Importer.Base
 														Meteor.call 'setReaction', ":#{reaction.name}:", msgDataDefaults._id
 
 									@addCountCompleted 1
-			console.log 'Missed import types:', missedTypes
+
+			if not _.isEmpty missedTypes
+				console.log 'Missed import types:', missedTypes
+
 			@updateProgress Importer.ProgressStep.FINISHING
 			for channel in @channels.channels when channel.do_import and channel.is_archived
 				do (channel) =>

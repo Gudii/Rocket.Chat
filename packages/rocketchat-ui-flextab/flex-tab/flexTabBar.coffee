@@ -8,12 +8,12 @@ Template.flexTabBar.helpers
 	visible: ->
 		if @groups.indexOf(RocketChat.TabBar.getVisibleGroup()) is -1
 			return 'hidden'
-		
+
 
 Template.flexTabBar.events
 	'click .tab-button': (e, t) ->
 		e.preventDefault()
-		
+
 		console.log(RocketChat.TabBar.isFlexOpen())
 		thebar = document.getElementsByClassName("flex-tab-bar")[0]
 		#if thebar.style.display is "none"
