@@ -22,12 +22,6 @@ Meteor.startup(() => {
 				title: selector[i].dataset.title,
 				description: selector[i].dataset.description
 			});
-			/*wmark.init({
-				'position': "bottom-right",
-				'opacity': 50,
-				'className': "gallery-item",
-				'path': "/images/logo/copyright.png"
-			});*/
 
 			if (imageSrc === selector[i].src) {
 				results.index = i;
@@ -74,11 +68,3 @@ Meteor.startup(() => {
 		});
 	});
 });
-/*Template.photoswipe.onRendered(function() {
-	wmark.init({
-		'position': "bottom-right",
-		'opacity': 50,
-		'className': "gallery-item",
-		'path': "/images/logo/copyright.png"
-	});
-});*/

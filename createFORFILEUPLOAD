@@ -1,7 +1,17 @@
-db.rocketchat_room.insert({_id:"FORFILEUPLOAD", ts:ISODate("2017-04-08T14:41:07.616Z"), t:"c", name:"forfileupload", usernames: ["student1"], msgs: 0, _updatedAt:ISODate("2017-04-09T05:42:31.869Z"})
+db.rocketchat_room.insert({_id:"FORFILEUPLOAD", ts:ISODate("2017-04-08T14:41:07.616Z"), t:"c", name:"forfileupload", usernames: ["student1"], msgs: 0, _updatedAt:ISODate("2017-04-09T05:42:31.869Z”)})
 
 db.rocketchat_mcnTestHospital.insert({HospitalName:"hospital1", AvailableBeds:0, Division:["divisionA","divisionB"], locationX:15, locationY:20})
 db.rocketchat_mcnTestHospital.insert({HospitalName:"hospital2", AvailableBeds:1, Division:["divisionA","divisionB","divisionC"], locationX:30, locationY:40})
 db.rocketchat_mcnTestHospital.insert({HospitalName:"hospital3", AvailableBeds:1, Division:["divisionA","divisionC"], locationX:10, locationY:10})
 db.rocketchat_mcnTestHospital.insert({HospitalName:"hospital4", AvailableBeds:2, Division:["divisionB"], locationX:15, locationY:15})
 db.rocketchat_mcnTestHospital.insert({HospitalName:"hospital5", AvailableBeds:2, Division:["divisionA","divisionB"], locationX:5, locationY:5})
+
+"_id" : "FORFILEUPLOAD", 
+"name":"forfileupload",
+    "usernames" : [
+        "student1"
+    ], 
+    "t" : "c", 
+    "msgs" : NumberInt(0), 
+    "ts" : ISODate("2016-03-11T01:13:17.543+0000"), 
+    "lm" : ISODate("2016-04-01T14:35:34.632+0000")

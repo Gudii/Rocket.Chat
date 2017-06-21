@@ -64,7 +64,7 @@ Template.messageAttachment.helpers
 
 	window.handin_this = ->
 		img=document.getElementById("theimg").src
-		text =
+		text = 
 			'<div class="upload-preview">
 				<fieldset>
 					<div class="input-line">
@@ -110,10 +110,3 @@ Template.messageAttachment.helpers
 				title: "Success"
 				type: "success"
 				timer: 3000
-
-Meteor.startup ->
-	wmark.init
-		'position': "bottom-right",
-		'opacity': 50,
-		'className': "gallery-item",
-		'path': "/images/logo/copyright.png"

@@ -74,6 +74,15 @@
 								</div>
 							{{/if}}
 						{{/if}}
+						{{#if state 'Need_Verify'}}
+							<div class="input-line">
+								<label for="captcha">{{_ "captcha"}}</label>
+								<div>
+									<input type="text" name='captcha' id="captcha" placeholder="{{_ "captcha"}}" />
+									<div class="input-error"></div>
+								</div>
+							</div>
+						{{/if}}
 						{{#if state 'forgot-password' 'email-verification'}}
 							<div class="input-line">
 								<label for="email">{{_ "Email"}}</label>
@@ -90,7 +99,7 @@
 					{{#if state 'login'}}
 						{{#if registrationAllowed}}
 							<div>
-								<button type="button" class="register">{{_ 'Register'}}</button>
+								<!--<button type="button" class="register">{{_ 'Register'}}</button>-->
 							</div>
 						{{else}}
 							{{#if linkReplacementText}}
@@ -101,7 +110,7 @@
 						{{/if}}
 						{{#if passwordResetAllowed}}
 							<div>
-								<button type="button" class="forgot-password">{{_ 'Forgot_password'}}</button>
+								<!--<button type="button" class="forgot-password">{{_ 'Forgot_password'}}</button>-->
 							</div>
 						{{/if}}
 					{{/if}}

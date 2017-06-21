@@ -8,11 +8,7 @@
 			Session.set("isMenuOpen", true)
 		else
 			Session.set("isMenuOpen", false)
-		wmark.init
-			'position': "bottom-right"
-			'opacity': 50
-			'className': "gallery-item"
-			'path': "/images/logo/copyright.png"
+
 	isOpen: ->
 		return Session.get("isMenuOpen")
 

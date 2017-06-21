@@ -51,25 +51,6 @@ Template.sideNav.helpers({
 			return this.template;
 		}
 	},
-
-
-	/*opentab(evt, divname) {
-		var tabcontent, i, tabbutton;
-		tabcontent = document.getElementsByClassName('tabcontent');
-		i = 0;
-		while (i < tabcontent.length) {
-			tabcontent[i].style.display = 'none';
-			i++;
-		}
-		document.getElementById(divname).style.display = 'block';
-		tabbutton = document.getElementsByClassName('tabbutton');
-		i = 0;
-		while (i < tabbutton.length) {
-			tabbutton[i].style.backgroundColor = "rgba(100, 100, 100, 0.0)";
-			i++;
-		}
-		evt.currentTarget.style.backgroundColor = "rgba(100, 100, 100, 0.4)";
-	}*/
 });
 
 Template.sideNav.events({

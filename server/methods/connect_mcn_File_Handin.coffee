@@ -9,7 +9,7 @@ Meteor.methods
 
     future = new Future()
     try
-      Meteor.http.call("POST", "http://140.112.124.238/api/upload_record",
+      Meteor.http.call("POST", "http://mefeu.csie.ntu.edu.tw/api/upload_record",
           {data: {username: mcnFileData.username, type: mcnFileData.type, comment: mcnFileData.comment, img: mcnFileData.img}},
           (error, result) ->
             #console.log result

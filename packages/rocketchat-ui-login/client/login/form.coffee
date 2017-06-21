@@ -14,7 +14,7 @@ Template.loginForm.helpers
 
 	btnLoginSave: ->
 		switch Template.instance().state.get()
-			when 'register', 'Need_Verify'
+			when 'register' or 'Need_Verify'
 				return t('Submit')
 			when 'login'
 				return t('Login')
@@ -142,64 +142,46 @@ Template.loginForm.events
 							instance.state.set 'wait-activation'
 
 			if instance.state.get() is 'login'
-				# formData.pass = CryptoJS.SHA1(formData.pass).toString()
-				loginMethod = 'loginWithPassword'
-				Meteor.call 'registerUser_mcn', formData.emailOrUsername, formData.pass, (error, result) ->
-					console.log error
-					console.log result
-				Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
-					console.log error
-					console.log formData.emailOrUsername
+				formData.pass = CryptoJS.SHA1(formData.pass).toString()
+				Meteor.call 'acc_verify', formData, (error, result) ->
 					RocketChat.Button.reset(button)
-					if error?
-						if error.error is 'no-valid-email'
-							instance.state.set 'email-verification'
-						else
-							toastr.error t 'User_not_found_or_incorrect_password'
-						return
-					if Meteor.user()?.language?
-						localStorage.setItem('userLanguage', Meteor.user().language)
-						setLanguage(Meteor.user().language)
-				# Meteor.call 'acc_verify', formData, (error, result) ->
-				# 	RocketChat.Button.reset(button)
-				# 	#console.log (result)
-				# 	if (result.statusCode == 200)
-				# 		data = JSON.parse(result.data)
-				# 		#console.log (data.msg)
-				# 		localStorage.setItem('email',formData.emailOrUsername)
-				# 		localStorage.setItem('password',formData.pass)
-				# 		window.uid = data.uid
-				# 		window.account_email = formData.emailOrUsername
-				# 		window.account_pass = formData.pass
-				# 		if data.msg == 'Need Verify'
-				# 			#console.log ("Need Verify")
-				# 			instance.state.set 'Need_Verify'
-				# 			#code = formData.captcha
-				#
-				# 		else if data.msg == 'Verified'
-				# 			#console.log ("Verified")
-				# 			#RocketChat.Button.reset(button)
-				#
-				# 			loginMethod = 'loginWithPassword'
-				# 			Meteor.call 'registerUser_mcn', formData.emailOrUsername, formData.pass, (error, result) ->
-				# 			Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
-				# 				RocketChat.Button.reset(button)
-				# 				if error?
-				# 					if error.error is 'no-valid-email'
-				# 						instance.state.set 'email-verification'
-				# 					else
-				# 						toastr.error t 'User_not_found_or_incorrect_password'
-				# 					return
-				# 				if Meteor.user()?.language?
-				# 					localStorage.setItem('userLanguage', Meteor.user().language)
-				# 					setLanguage(Meteor.user().language)
-				#
-				# 		else if data.msg == 'Visitor No Access'
-				# 			toastr.error t 'Permission denied'
-				#
-				# 	else if result.statusCode == 404
-				# 		#console.log ("error")
-				# 		toastr.error t 'User_not_found_or_incorrect_password'
+					if (result.statusCode == 200)
+						data = JSON.parse(result.data)
+						#console.log (data.msg)
+						localStorage.setItem('email',formData.emailOrUsername)
+						localStorage.setItem('password',formData.pass)
+						window.uid = data.uid
+						window.account_email = formData.emailOrUsername
+						window.account_pass = formData.pass
+						if data.msg == 'Need Verify'
+							console.log ("Need Verify")
+							instance.state.set 'Need_Verify'
+							#code = formData.captcha
+
+						else if data.msg == 'Verified'
+							console.log ("Verified")
+							#RocketChat.Button.reset(button)
+
+							loginMethod = 'loginWithPassword'
+							Meteor.call 'registerUser_mcn', formData.emailOrUsername, formData.pass, (error, result) ->
+							Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
+								RocketChat.Button.reset(button)
+								if error?
+									if error.error is 'no-valid-email'
+										instance.state.set 'email-verification'
+									else
+										toastr.error t 'User_not_found_or_incorrect_password'
+									return
+								if Meteor.user()?.language?
+									localStorage.setItem('userLanguage', Meteor.user().language)
+									setLanguage(Meteor.user().language)
+
+						else if data.msg == 'Visitor No Access'
+							toastr.error t 'Permission denied'
+
+					else if result.statusCode == 404
+						console.log ("error")
+						toastr.error t 'User_not_found_or_incorrect_password'
 				###loginMethod = 'loginWithPassword'
 
 				Meteor[loginMethod] formData.emailOrUsername, formData.pass, (error) ->
